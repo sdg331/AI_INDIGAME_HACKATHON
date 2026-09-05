@@ -19,6 +19,10 @@ public sealed class PlayerCameraFollow2D : MonoBehaviour
     private Tilemap currentBoundsTilemap;
     private Vector3 followVelocity;
     private float nextBoundsRefreshTime;
+    private Vector3 lastShakeOffset;
+    private float shakeEndTime;
+    private float shakeDuration;
+    private float shakeIntensity;
 
     private void Awake()
     {
@@ -42,16 +46,30 @@ public sealed class PlayerCameraFollow2D : MonoBehaviour
         Vector3 desiredPosition = playerTarget.position + offset;
         desiredPosition = ClampToCurrentTilemap(desiredPosition);
 
+        Vector3 unshakenPosition = transform.position - lastShakeOffset;
         Vector3 smoothedPosition = Vector3.SmoothDamp(
-            transform.position,
+            unshakenPosition,
             desiredPosition,
             ref followVelocity,
             followSmoothTime,
             maximumFollowSpeed,
             Time.deltaTime);
 
-        // 부드러운 이동 중에도 카메라 화면이 맵 경계를 한 프레임도 넘지 않게 다시 제한한다.
-        transform.position = ClampToCurrentTilemap(smoothedPosition);
+        // 추적 결과에만 흔들림을 더하므로 SmoothDamp의 기준 위치가 흔들리지 않는다.
+        Vector3 basePosition = ClampToCurrentTilemap(smoothedPosition);
+        Vector3 finalPosition = ClampToCurrentTilemap(basePosition + GetShakeOffset());
+        lastShakeOffset = finalPosition - basePosition;
+        transform.position = finalPosition;
+    }
+
+    public void Shake(float intensity, float duration)
+    {
+        if (intensity <= 0f || duration <= 0f)
+            return;
+
+        shakeIntensity = intensity;
+        shakeDuration = duration;
+        shakeEndTime = Time.unscaledTime + duration;
     }
 
     public void SetTarget(Transform target, bool snapImmediately = false)
@@ -61,7 +79,10 @@ public sealed class PlayerCameraFollow2D : MonoBehaviour
         RefreshBounds();
 
         if (snapImmediately && playerTarget != null)
+        {
+            lastShakeOffset = Vector3.zero;
             transform.position = ClampToCurrentTilemap(playerTarget.position + offset);
+        }
     }
 
     // 스테이지를 교체한 직후 외부에서 호출해도 되고, 호출하지 않아도 주기적으로 자동 갱신됩니다.
@@ -140,6 +161,20 @@ public sealed class PlayerCameraFollow2D : MonoBehaviour
         return minimum > maximum
             ? (minimum + maximum) * 0.5f
             : Mathf.Clamp(value, minimum, maximum);
+    }
+
+    private Vector3 GetShakeOffset()
+    {
+        float remaining = shakeEndTime - Time.unscaledTime;
+        if (remaining <= 0f || shakeDuration <= 0f)
+        {
+            shakeIntensity = 0f;
+            return Vector3.zero;
+        }
+
+        float strength = shakeIntensity * Mathf.Clamp01(remaining / shakeDuration);
+        Vector2 randomOffset = Random.insideUnitCircle * strength;
+        return new Vector3(randomOffset.x, randomOffset.y, 0f);
     }
 
     private static Bounds GetWorldBounds(Tilemap tilemap)

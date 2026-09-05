@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
@@ -55,9 +56,12 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     [SerializeField, Min(0f)] private float defaultGroggyDuration = 2f;
     [SerializeField, Min(0.1f)] private float groggyBuildupThreshold = 3f;
 
-    [Header("Optional Visuals")]
+    [Header("Animation / Visuals")]
     [SerializeField] private SpriteRenderer characterSprite;
     [SerializeField] private Animator animator;
+    [Tooltip("원본 스프라이트가 오른쪽을 바라보고 있으면 활성화합니다.")]
+    [SerializeField] private bool spriteFacesRightByDefault = true;
+    [SerializeField, Min(0f)] private float movementAnimationThreshold = 0.05f;
     [SerializeField] private EnemyHealthBar2D healthBar;
     [SerializeField] private bool ignoreBodyCollisionWithPlayer = true;
 
@@ -77,10 +81,15 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     private int facingSign = 1;
     private float groggyBuildup;
     private TextMesh dangerMarkerText;
+    private readonly HashSet<int> animatorFloatParameters = new();
+    private readonly HashSet<int> animatorBoolParameters = new();
+    private readonly HashSet<int> animatorTriggerParameters = new();
 
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    private static readonly int MovingHash = Animator.StringToHash("IsMoving");
     private static readonly int GroundedHash = Animator.StringToHash("Grounded");
     private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private static readonly int AttackingHash = Animator.StringToHash("IsAttacking");
     private static readonly int HitHash = Animator.StringToHash("Hit");
     private static readonly int GroggyHash = Animator.StringToHash("Groggy");
     private static readonly int IncapacitatedHash = Animator.StringToHash("Incapacitated");
@@ -95,10 +104,11 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
 
         if (groundLayer.value == 0)
             groundLayer = LayerMask.GetMask("Ground");
-        if (characterSprite == null)
-            characterSprite = GetComponentInChildren<SpriteRenderer>(true);
         if (animator == null)
             animator = GetComponentInChildren<Animator>(true);
+        if (characterSprite == null)
+            characterSprite = FindCharacterSprite();
+        CacheAnimatorParameters();
         if (healthBar == null)
             healthBar = GetComponent<EnemyHealthBar2D>();
         if (healthBar == null)
@@ -142,6 +152,12 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
             MoveTowardsPlayer();
         else if (currentState != State.HitStun)
             StopMoving();
+    }
+
+    private void LateUpdate()
+    {
+        // 애니메이션 클립이 SpriteRenderer 값을 갱신하더라도 마지막에 방향을 다시 적용한다.
+        ApplyFacingVisual();
     }
 
     private void UpdateState(float distance)
@@ -445,9 +461,57 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     private void SetFacing(int sign)
     {
         facingSign = sign;
-        if (characterSprite != null)
-            characterSprite.flipX = sign < 0;
+        ApplyFacingVisual();
         PositionAttackHitbox();
+    }
+
+    private void ApplyFacingVisual()
+    {
+        if (characterSprite == null)
+            return;
+
+        characterSprite.flipX = spriteFacesRightByDefault
+            ? facingSign < 0
+            : facingSign > 0;
+    }
+
+    private SpriteRenderer FindCharacterSprite()
+    {
+        if (animator != null)
+        {
+            SpriteRenderer animatorRenderer = animator.GetComponent<SpriteRenderer>();
+            if (animatorRenderer != null)
+                return animatorRenderer;
+
+            animatorRenderer = animator.GetComponentInChildren<SpriteRenderer>(true);
+            if (animatorRenderer != null)
+                return animatorRenderer;
+        }
+
+        foreach (SpriteRenderer candidate in GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            if (candidate.GetComponentInParent<EnemyAttackHitbox>() != null ||
+                IsGeneratedStatusVisual(candidate.transform))
+            {
+                continue;
+            }
+
+            return candidate;
+        }
+
+        return null;
+    }
+
+    private bool IsGeneratedStatusVisual(Transform candidate)
+    {
+        Transform current = candidate;
+        while (current != null && current != transform)
+        {
+            if (current.name == "EnemyHealthBar" || current.name == "DangerMarker")
+                return true;
+            current = current.parent;
+        }
+        return false;
     }
 
     private void PositionAttackHitbox()
@@ -501,20 +565,60 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     {
         if (animator == null)
             return;
-        animator.SetFloat(SpeedHash, Mathf.Abs(body.linearVelocity.x));
-        animator.SetBool(GroundedHash, isGrounded);
+
+        float horizontalSpeed = Mathf.Abs(body.linearVelocity.x);
+        bool isMoving = currentState == State.Chase && isGrounded &&
+                        horizontalSpeed > movementAnimationThreshold;
+        bool isAttacking = currentState == State.Windup || currentState == State.Attack;
+
+        SetAnimatorFloat(SpeedHash, horizontalSpeed);
+        SetAnimatorBool(MovingHash, isMoving);
+        SetAnimatorBool(GroundedHash, isGrounded);
+        SetAnimatorBool(AttackingHash, isAttacking);
     }
 
     private void SetAnimatorTrigger(int parameter)
     {
-        if (animator != null)
+        if (animator != null && animatorTriggerParameters.Contains(parameter))
             animator.SetTrigger(parameter);
     }
 
     private void SetAnimatorBool(int parameter, bool value)
     {
-        if (animator != null)
+        if (animator != null && animatorBoolParameters.Contains(parameter))
             animator.SetBool(parameter, value);
+    }
+
+    private void SetAnimatorFloat(int parameter, float value)
+    {
+        if (animator != null && animatorFloatParameters.Contains(parameter))
+            animator.SetFloat(parameter, value);
+    }
+
+    private void CacheAnimatorParameters()
+    {
+        animatorFloatParameters.Clear();
+        animatorBoolParameters.Clear();
+        animatorTriggerParameters.Clear();
+
+        if (animator == null)
+            return;
+
+        foreach (AnimatorControllerParameter parameter in animator.parameters)
+        {
+            switch (parameter.type)
+            {
+                case AnimatorControllerParameterType.Float:
+                    animatorFloatParameters.Add(parameter.nameHash);
+                    break;
+                case AnimatorControllerParameterType.Bool:
+                    animatorBoolParameters.Add(parameter.nameHash);
+                    break;
+                case AnimatorControllerParameterType.Trigger:
+                    animatorTriggerParameters.Add(parameter.nameHash);
+                    break;
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()

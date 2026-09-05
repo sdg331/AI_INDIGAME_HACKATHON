@@ -22,6 +22,11 @@ public sealed class PlayerController2D : MonoBehaviour
     [SerializeField, Min(0.01f)] private float attackActiveTime = 0.12f;
     [SerializeField, Min(0f)] private float attackRecovery = 0.2f;
 
+    [Header("Attack Camera Shake")]
+    [SerializeField] private PlayerCameraFollow2D cameraFollow;
+    [SerializeField, Min(0f)] private float attackShakeIntensity = 0.08f;
+    [SerializeField, Min(0f)] private float attackShakeDuration = 0.12f;
+
     [Header("Guard / Parry")]
     [SerializeField, Min(0.01f)] private float parryWindow = 0.2f;
     [SerializeField, Min(0f)] private float guardCooldown = 0.5f;
@@ -74,6 +79,8 @@ public sealed class PlayerController2D : MonoBehaviour
     {
         body = GetComponent<Rigidbody2D>();
         mainCamera = Camera.main;
+        if (cameraFollow == null && mainCamera != null)
+            cameraFollow = mainCamera.GetComponent<PlayerCameraFollow2D>();
         ResolveEntityInterfaces();
         SetupPlayerStatusSystems();
 
@@ -224,6 +231,7 @@ public sealed class PlayerController2D : MonoBehaviour
         lastGroundedTime = float.NegativeInfinity;
         body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
         SetAnimatorTrigger("Jump");
+        SoundManager.Play("jump#1");
     }
 
     private bool CanJump()
@@ -245,12 +253,27 @@ public sealed class PlayerController2D : MonoBehaviour
         SetAnimatorTrigger("Attack");
 
         yield return new WaitForSeconds(attackWindup);
+        TriggerAttackCameraShake();
         attackHitbox.BeginAttack(Vector2.right * FacingSign);
         yield return new WaitForSeconds(attackActiveTime);
         attackHitbox.EndAttack();
         yield return new WaitForSeconds(attackRecovery);
         isAttackFacingLocked = false;
         state = PlayerState.Normal;
+    }
+
+    private void TriggerAttackCameraShake()
+    {
+        if (cameraFollow == null)
+        {
+            if (mainCamera == null)
+                mainCamera = Camera.main;
+            if (mainCamera != null)
+                cameraFollow = mainCamera.GetComponent<PlayerCameraFollow2D>();
+        }
+
+        if (cameraFollow != null)
+            cameraFollow.Shake(attackShakeIntensity, attackShakeDuration);
     }
 
     private IEnumerator GuardRoutine()
@@ -479,4 +502,5 @@ public sealed class PlayerController2D : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
+
 }

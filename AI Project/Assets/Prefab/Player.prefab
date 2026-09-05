@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6988616902552377819}
   - component: {fileID: 4152043157146082885}
+  - component: {fileID: 9139685533769061414}
   - component: {fileID: 4990230971320100819}
   m_Layer: 6
   m_Name: Square
@@ -92,6 +93,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &9139685533769061414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910809382943656853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e82524173522c5447b5f53411039d34f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSoundTest
+  dashEffectPrefab: {fileID: 8764273880008666115, guid: 603638dd83d8fc24eaf76cabd4ccf148, type: 3}
 --- !u!95 &4990230971320100819
 Animator:
   serializedVersion: 7
@@ -158,6 +172,7 @@ GameObject:
   - component: {fileID: 8116656905476531620}
   - component: {fileID: 6473842227680399590}
   - component: {fileID: 7651223268752511488}
+  - component: {fileID: 2610226858332974784}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -254,7 +269,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 1, y: 1.65}
   m_EdgeRadius: 0
 --- !u!114 &6473842227680399590
 MonoBehaviour:
@@ -281,6 +296,9 @@ MonoBehaviour:
   attackWindup: 0.08
   attackActiveTime: 0.12
   attackRecovery: 0.2
+  cameraFollow: {fileID: 0}
+  attackShakeIntensity: 0.08
+  attackShakeDuration: 0.12
   parryWindow: 0.2
   guardCooldown: 0.5
   groggyDuration: 2
@@ -310,6 +328,20 @@ MonoBehaviour:
   onDied:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2610226858332974784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3569039016525954153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e794209f33bb9c458feaf5d89e2a685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerComboCounter
+  maximumCombo: 30
+  comboResetDelay: 3
 --- !u!1 &3709102727860910857
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,7 +447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c9fcd34b8950db4ea13f082eba261a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttackHitbox
-  damage: 1
+  damage: 20
 --- !u!61 &1452387838752390483
 BoxCollider2D:
   m_ObjectHideFlags: 0

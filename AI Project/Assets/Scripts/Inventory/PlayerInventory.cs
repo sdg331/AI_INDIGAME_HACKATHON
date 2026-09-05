@@ -188,8 +188,8 @@ public sealed class PlayerInventory : MonoBehaviour
         if (attackHitbox == null)
             attackHitbox = GetComponentInChildren<PlayerAttackHitbox>(true);
 
-        if (attackHitbox != null && EquippedSword != null)
-            attackHitbox.SetDamage(EquippedSword.MeleeDamage);
+        if (attackHitbox != null && EquippedSword != null) { }
+            //attackHitbox.SetDamage(EquippedSword.MeleeDamage);
     }
 
     private void LoadStartingItems()

@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public sealed class PlayerAttackHitbox : MonoBehaviour
 {
-    [SerializeField, Min(1)] private int damage = 1;
+    [SerializeField, Min(20)] private int damage = 20;
 
     private readonly HashSet<IDamageable> hitTargets = new();
     private BoxCollider2D hitbox;

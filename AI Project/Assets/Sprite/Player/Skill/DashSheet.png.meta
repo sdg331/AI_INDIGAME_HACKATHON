@@ -1,0 +1,303 @@
+fileFormatVersion: 2
+guid: 27a8f3ef59f2dc84689ea9f6c6fb94c6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2980291568934942385
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_0"
+  - first:
+      213: -6879197489442177444
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_1"
+  - first:
+      213: -2544322224506112493
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_2"
+  - first:
+      213: -2991221762613072734
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_3"
+  - first:
+      213: 4477526607828170284
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_4"
+  - first:
+      213: 6876026699330173097
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_5"
+  - first:
+      213: -7537950830030696028
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_6"
+  - first:
+      213: 4540182383017471744
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_7"
+  - first:
+      213: 2856448133672958930
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_8"
+  - first:
+      213: 7021537580386838664
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_9"
+  - first:
+      213: -941711457908607508
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_10"
+  - first:
+      213: -70273061830810821
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_11"
+  - first:
+      213: -1792696453867320839
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_12"
+  - first:
+      213: 7030972626465469168
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_13"
+  - first:
+      213: 2140299525717675340
+    second: "\uC774\uD399\uD2B8_\uB3CC\uC9C4_\uC2DC\uD2B8_96x48x6_14"
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DashSheet_1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77d18142c204e8f4aab07ae57ffe0820
+      internalID: 1525763690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DashSheet_2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29e087ec142853d44844c8b7c89381e5
+      internalID: -1362498781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DashSheet_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4b32c499b256b14ea4802512affec1d
+      internalID: -1137847026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DashSheet_4
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a134bd2fc22d5f4d9b43fbdfc9c74ad
+      internalID: 1503232256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DashSheet_5
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfc56214e26aee7469bf30fd12924774
+      internalID: -1867212584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DashSheet_6
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b28360c30bba57a4db75cfc832395912
+      internalID: -992006923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2fd350a775bd07a4bab7e72eee1a0ee9
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":48.0,"y":48.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      DashSheet_0: 1118900143
+      DashSheet_1: 1525763690
+      DashSheet_2: -1362498781
+      DashSheet_3: -1137847026
+      DashSheet_4: 1503232256
+      DashSheet_5: -1867212584
+      DashSheet_6: -992006923
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
