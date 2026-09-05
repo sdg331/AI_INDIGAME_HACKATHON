@@ -189,7 +189,11 @@ public sealed class PlayerInventoryHUD : MonoBehaviour
         if (!showReserve)
             return;
 
-        reserveSwordLabel.text = $"예비 검 · {reserveSword.DisplayName}  (R로 교체)";
+        float swapCooldown = inventory.SwordSwapCooldownRemaining;
+        string swapStatus = swapCooldown > 0f
+            ? $"교체 대기 {swapCooldown:0.0}초"
+            : "R로 교체";
+        reserveSwordLabel.text = $"예비 검 · {reserveSword.DisplayName}  ({swapStatus})";
         for (int slotIndex = 0; slotIndex < 2; slotIndex++)
             RefreshSkillSlot(reserveSkillSlots[slotIndex],
                 inventory.GetSwordRelic(reserveIndex, slotIndex), slotIndex + 1, false);

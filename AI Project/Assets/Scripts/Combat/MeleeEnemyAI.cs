@@ -51,7 +51,6 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
 
     [Header("Health / State")]
     [SerializeField, Min(1)] private int maxHealth = 3;
-    [SerializeField, Min(0f)] private float knockbackForce = 5f;
     [SerializeField, Min(0f)] private float hitStunDuration = 0.2f;
     [SerializeField, Min(0f)] private float defaultGroggyDuration = 2f;
     [SerializeField, Min(0.1f)] private float groggyBuildupThreshold = 3f;
@@ -256,8 +255,7 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
         }
 
         SetAnimatorTrigger(HitHash);
-        body.linearVelocity = Vector2.zero;
-        body.AddForce(hitDirection.normalized * knockbackForce, ForceMode2D.Impulse);
+        body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
         ChangeTimedState(State.HitStun, hitStunDuration);
     }
 

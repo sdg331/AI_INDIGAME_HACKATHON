@@ -36,7 +36,11 @@ public sealed class PlayerInventory : MonoBehaviour
     [SerializeField] private SwordLoadout[] startingSwords = { new(), new() };
     [SerializeField] private RelicDefinition[] startingRelics = new RelicDefinition[3];
 
+    [Header("Sword Swap")]
+    [SerializeField, Min(0f)] private float swordSwapCooldown = 1f;
+
     public int EquippedSwordIndex { get; private set; }
+    public float SwordSwapCooldownRemaining => Mathf.Max(0f, nextSwordSwapTime - Time.time);
     public event Action InventoryChanged;
     public event Action<int> EquippedSwordChanged;
 
@@ -45,6 +49,7 @@ public sealed class PlayerInventory : MonoBehaviour
     private readonly RelicDefinition[] storedRelics = new RelicDefinition[3];
     private PlayerAttackHitbox attackHitbox;
     private bool initialized;
+    private float nextSwordSwapTime;
 
     public SwordDefinition EquippedSword => swords[EquippedSwordIndex];
 
@@ -96,7 +101,14 @@ public sealed class PlayerInventory : MonoBehaviour
             return false;
         }
 
+        if (Time.time < nextSwordSwapTime)
+        {
+            Debug.Log($"[Inventory] 검 교체 쿨타임 {SwordSwapCooldownRemaining:0.0}초", this);
+            return false;
+        }
+
         EquippedSwordIndex = 1 - EquippedSwordIndex;
+        nextSwordSwapTime = Time.time + swordSwapCooldown;
         ApplyEquippedSword();
         EquippedSwordChanged?.Invoke(EquippedSwordIndex);
         InventoryChanged?.Invoke();
