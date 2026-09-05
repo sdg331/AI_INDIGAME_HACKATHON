@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -6,8 +7,8 @@ public sealed class OathHUD : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     [SerializeField] private Image oathIcon;
     [SerializeField] private GameObject tooltipPanel;
-    [SerializeField] private Text oathNameText;
-    [SerializeField] private Text ruleDescriptionText;
+    [SerializeField] private TMP_Text oathNameText;
+    [SerializeField] private TMP_Text ruleDescriptionText;
     [SerializeField, Min(1f)] private float hoverScale = 1.15f;
     [SerializeField, Min(0f)] private float scaleSpeed = 12f;
 

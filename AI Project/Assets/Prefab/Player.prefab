@@ -153,7 +153,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &8116656905476531620
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -231,13 +231,7 @@ MonoBehaviour:
   rollCooldown: 0.5
   characterSprite: {fileID: 0}
   animator: {fileID: 0}
-  maxHealth: 5
-  onHealthChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onDied:
-    m_PersistentCalls:
-      m_Calls: []
+  damageReceiverBehaviour: {fileID: 0}
 --- !u!1 &3709102727860910857
 GameObject:
   m_ObjectHideFlags: 0
