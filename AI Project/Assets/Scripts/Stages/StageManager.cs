@@ -14,6 +14,11 @@ public sealed class StageManager : MonoBehaviour
     [SerializeField] private bool reuseExistingPlayer = true;
     [SerializeField] private GameObject currentPlayer;
 
+    [Header("Stage Rewards")]
+    [Tooltip("스테이지 클리어 시 이 목록에서 서로 다른 아이템 3개를 선택합니다.")]
+    [SerializeField] private List<ItemDefinition> rewardItemPool = new();
+    [SerializeField] private StageRewardSelection rewardSelection;
+
     [Header("Runtime (Read Only)")]
     [SerializeField] private GameObject currentStage;
 
@@ -27,6 +32,18 @@ public sealed class StageManager : MonoBehaviour
 
     private void Start()
     {
+        if (rewardItemPool.Count == 0)
+        {
+            foreach (ItemDefinition item in DefaultItemCatalog.Items)
+                rewardItemPool.Add(item);
+        }
+
+        if (rewardSelection == null)
+            rewardSelection = GetComponent<StageRewardSelection>();
+        if (rewardSelection == null)
+            rewardSelection = gameObject.AddComponent<StageRewardSelection>();
+        rewardSelection.Initialize(this);
+
         if (loadFirstStageOnStart)
             LoadNextStage();
     }
@@ -54,6 +71,21 @@ public sealed class StageManager : MonoBehaviour
     public void ResetUsedStages()
     {
         usedStageIndices.Clear();
+    }
+
+    public bool TryUseExit()
+    {
+        if (rewardSelection != null && rewardSelection.HasPendingChoice)
+        {
+            Debug.Log("[Stage] 보상 하나를 F키로 선택해야 다음 스테이지로 이동할 수 있습니다.", this);
+            return false;
+        }
+        return LoadNextStage();
+    }
+
+    public void OnStageRewardSelected()
+    {
+        LoadNextStage();
     }
 
     private void SpawnStage(GameObject stagePrefab)
@@ -174,6 +206,8 @@ public sealed class StageManager : MonoBehaviour
 
         exitUnlocked = true;
         currentExit.SetUnlocked(true);
+        if (rewardSelection != null && rewardItemPool.Count > 0)
+            rewardSelection.SpawnChoices(rewardItemPool, currentExit.transform.position);
         Debug.Log("[Stage] 모든 적 처리 완료. 도착 지점이 활성화되었습니다.", currentExit);
     }
 

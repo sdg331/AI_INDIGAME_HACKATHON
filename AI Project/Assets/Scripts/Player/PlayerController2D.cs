@@ -91,6 +91,8 @@ public sealed class PlayerController2D : MonoBehaviour
 
         if (attackHitbox != null)
             attackHitbox.EndAttack();
+
+        SetupInventorySystems();
     }
 
     private void OnDisable()
@@ -198,6 +200,20 @@ public sealed class PlayerController2D : MonoBehaviour
 
         PlayerHealth playerHealth = damageReceiver as PlayerHealth;
         PlayerStatusHUD.GetOrCreate().Bind(playerHealth, comboCounter);
+    }
+
+    private void SetupInventorySystems()
+    {
+        PlayerInventory inventory = GetComponent<PlayerInventory>();
+        if (inventory == null)
+            inventory = gameObject.AddComponent<PlayerInventory>();
+        inventory.Initialize();
+
+        RelicSkillController skills = GetComponent<RelicSkillController>();
+        if (skills == null)
+            skills = gameObject.AddComponent<RelicSkillController>();
+
+        PlayerInventoryHUD.GetOrCreate().Bind(inventory, skills, comboCounter);
     }
 
     private bool CanMove() => state == PlayerState.Normal || state == PlayerState.Attacking;

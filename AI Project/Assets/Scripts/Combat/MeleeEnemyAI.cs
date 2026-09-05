@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
-    IOathHealthState, IOathIncapacitable, IOathEntityIdentity
+    IGroggyBuildupReceiver, IOathHealthState, IOathIncapacitable, IOathEntityIdentity
 {
     private enum State
     {
@@ -54,6 +54,7 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     [SerializeField, Min(0f)] private float knockbackForce = 5f;
     [SerializeField, Min(0f)] private float hitStunDuration = 0.2f;
     [SerializeField, Min(0f)] private float defaultGroggyDuration = 2f;
+    [SerializeField, Min(0.1f)] private float groggyBuildupThreshold = 3f;
 
     [Header("Optional Visuals")]
     [SerializeField] private SpriteRenderer characterSprite;
@@ -75,6 +76,7 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     private float nextPlayerSearchTime;
     private bool isGrounded;
     private int facingSign = 1;
+    private float groggyBuildup;
     private TextMesh dangerMarkerText;
 
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -139,7 +141,7 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     {
         if (currentState == State.Chase && player != null)
             MoveTowardsPlayer();
-        else
+        else if (currentState != State.HitStun)
             StopMoving();
     }
 
@@ -272,6 +274,30 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
         float appliedDuration = duration > 0f ? duration : defaultGroggyDuration;
         ChangeTimedState(State.Groggy, appliedDuration);
         Debug.Log($"[Enemy] {name}: 패링됨, {appliedDuration:0.00}초 그로기", this);
+    }
+
+    public void AddGroggyBuildup(float amount, GameObject source)
+    {
+        if (amount <= 0f || IsDead || IsIncapacitated || IsGroggy)
+            return;
+
+        groggyBuildup += amount;
+        if (groggyBuildup < groggyBuildupThreshold)
+            return;
+
+        groggyBuildup = 0f;
+        EnterGroggy(defaultGroggyDuration, source);
+    }
+
+    public void ApplyPushback(Vector2 impulse, float movementLockDuration)
+    {
+        if (IsDead || IsIncapacitated)
+            return;
+
+        CancelAttack();
+        body.linearVelocity = Vector2.zero;
+        body.AddForce(impulse, ForceMode2D.Impulse);
+        ChangeTimedState(State.HitStun, Mathf.Max(0.05f, movementLockDuration));
     }
 
     public void Incapacitate()

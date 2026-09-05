@@ -40,5 +40,28 @@ public sealed class PlayerComboCounter : MonoBehaviour
         ComboChanged?.Invoke(CurrentCombo, maximumCombo);
         Debug.Log("[연격] 제한시간 초과 → 초기화", this);
     }
-}
 
+    public bool TryConsume(int amount)
+    {
+        if (amount < 0 || CurrentCombo < amount)
+            return false;
+
+        CurrentCombo -= amount;
+        if (CurrentCombo == 0)
+            resetAtTime = 0f;
+        ComboChanged?.Invoke(CurrentCombo, maximumCombo);
+        return true;
+    }
+
+    public int ConsumeAll(int minimumRequired)
+    {
+        if (CurrentCombo < minimumRequired)
+            return 0;
+
+        int consumed = CurrentCombo;
+        CurrentCombo = 0;
+        resetAtTime = 0f;
+        ComboChanged?.Invoke(CurrentCombo, maximumCombo);
+        return consumed;
+    }
+}

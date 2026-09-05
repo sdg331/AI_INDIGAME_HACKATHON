@@ -30,7 +30,7 @@ public sealed class StageExitPoint : MonoBehaviour
 
         PlayerController2D player = other.GetComponentInParent<PlayerController2D>();
         if (player != null)
-            stageManager.LoadNextStage();
+            stageManager.TryUseExit();
     }
 
     private void OnDrawGizmos()
@@ -39,4 +39,3 @@ public sealed class StageExitPoint : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(0.8f, 1.5f, 0f));
     }
 }
-

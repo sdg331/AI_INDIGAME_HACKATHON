@@ -10,6 +10,14 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
     private BoxCollider2D hitbox;
     private Vector2 attackDirection = Vector2.right;
     private PlayerComboCounter comboCounter;
+    private RelicSkillController skillController;
+
+    public int Damage => damage;
+
+    public void SetDamage(int value)
+    {
+        damage = Mathf.Max(1, value);
+    }
 
     private void Awake()
     {
@@ -21,6 +29,8 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
         CacheHitbox();
         if (comboCounter == null)
             comboCounter = GetComponentInParent<PlayerComboCounter>();
+        if (skillController == null)
+            skillController = GetComponentInParent<RelicSkillController>();
         attackDirection = direction.normalized;
         hitTargets.Clear();
         gameObject.SetActive(true);
@@ -73,6 +83,8 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
             target.TakeDamage(allowedDamage, other.ClosestPoint(transform.position), attackDirection);
             if (comboCounter != null)
                 comboCounter.RegisterSuccessfulHit();
+            if (skillController != null)
+                skillController.NotifySuccessfulAttack(targetObject);
         }
 
         if (oathSystem != null)
