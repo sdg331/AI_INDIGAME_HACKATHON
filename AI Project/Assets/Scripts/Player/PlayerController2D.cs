@@ -8,9 +8,13 @@ public sealed class PlayerController2D : MonoBehaviour
     [Header("Movement")]
     [SerializeField, Min(0f)] private float moveSpeed = 6f;
     [SerializeField, Min(0f)] private float jumpForce = 12f;
+    [Tooltip("발판에서 떨어진 직후에도 점프할 수 있는 유예 시간입니다.")]
+    [SerializeField, Min(0f)] private float coyoteTime = 0.12f;
     [SerializeField] private Transform groundCheck;
     [SerializeField, Min(0.01f)] private float groundCheckRadius = 0.15f;
     [SerializeField] private LayerMask groundLayer;
+    [Tooltip("벽을 향해 이동할 때 마찰로 벽에 달라붙는 현상을 방지합니다.")]
+    [SerializeField] private bool preventWallSticking = true;
 
     [Header("Attack")]
     [SerializeField] private PlayerAttackHitbox attackHitbox;
@@ -31,6 +35,7 @@ public sealed class PlayerController2D : MonoBehaviour
     [Header("Visuals (Optional)")]
     [SerializeField] private SpriteRenderer characterSprite;
     [SerializeField] private Animator animator;
+    [SerializeField, Min(0f)] private float walkingAnimationThreshold = 0.05f;
 
     [Header("Entity Interface")]
     [Tooltip("실제 체력을 관리하며 IDamageable을 구현한 엔티티 컴포넌트입니다.")]
@@ -49,7 +54,11 @@ public sealed class PlayerController2D : MonoBehaviour
     private float nextRollTime;
     private bool isGrounded;
     private bool isAttackFacingLocked;
+    private float lastGroundedTime = float.NegativeInfinity;
+    private bool coyoteJumpConsumed;
     private IDamageable damageReceiver;
+    private PhysicsMaterial2D frictionlessMaterial;
+
 
     private enum PlayerState
     {
@@ -66,11 +75,17 @@ public sealed class PlayerController2D : MonoBehaviour
         mainCamera = Camera.main;
         ResolveEntityInterfaces();
 
+        if (preventWallSticking)
+            ApplyFrictionlessMovementMaterial();
+
         if (attackHitbox == null)
             attackHitbox = GetComponentInChildren<PlayerAttackHitbox>(true);
 
         if (characterSprite == null)
             characterSprite = GetComponentInChildren<SpriteRenderer>(true);
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>(true);
 
         if (attackHitbox != null)
             attackHitbox.EndAttack();
@@ -85,6 +100,12 @@ public sealed class PlayerController2D : MonoBehaviour
         state = PlayerState.Normal;
     }
 
+    private void OnDestroy()
+    {
+        if (frictionlessMaterial != null)
+            Destroy(frictionlessMaterial);
+    }
+
     private void Update()
     {
         ReadMovement();
@@ -92,7 +113,7 @@ public sealed class PlayerController2D : MonoBehaviour
 
         if (state == PlayerState.Normal)
         {
-            if (Keyboard.current?.spaceKey.wasPressedThisFrame == true && isGrounded)
+            if (Keyboard.current?.spaceKey.wasPressedThisFrame == true && CanJump())
                 Jump();
 
             if (Mouse.current?.leftButton.wasPressedThisFrame == true)
@@ -150,12 +171,36 @@ public sealed class PlayerController2D : MonoBehaviour
         moveInput = Vector2.ClampMagnitude(moveInput, 1f);
     }
 
+    private void ApplyFrictionlessMovementMaterial()
+    {
+        frictionlessMaterial = new PhysicsMaterial2D("Player Frictionless")
+        {
+            friction = 0f,
+            bounciness = 0f,
+            hideFlags = HideFlags.HideAndDontSave
+        };
+
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
+        foreach (Collider2D playerCollider in colliders)
+        {
+            if (playerCollider != null && !playerCollider.isTrigger)
+                playerCollider.sharedMaterial = frictionlessMaterial;
+        }
+    }
+
     private bool CanMove() => state == PlayerState.Normal || state == PlayerState.Attacking;
 
     private void Jump()
     {
+        coyoteJumpConsumed = true;
+        lastGroundedTime = float.NegativeInfinity;
         body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
         SetAnimatorTrigger("Jump");
+    }
+
+    private bool CanJump()
+    {
+        return !coyoteJumpConsumed && Time.time <= lastGroundedTime + coyoteTime;
     }
 
     private IEnumerator AttackRoutine()
@@ -331,6 +376,13 @@ public sealed class PlayerController2D : MonoBehaviour
     {
         isGrounded = groundCheck != null && Physics2D.OverlapCircle(
             groundCheck.position, groundCheckRadius, groundLayer) != null;
+
+        // 점프 직후 GroundCheck가 잠시 바닥과 겹쳐도 코요테 점프가 다시 충전되지 않게 한다.
+        if (isGrounded && body.linearVelocity.y <= 0.01f)
+        {
+            lastGroundedTime = Time.time;
+            coyoteJumpConsumed = false;
+        }
     }
 
     private void UpdateAnimator()
@@ -338,9 +390,14 @@ public sealed class PlayerController2D : MonoBehaviour
         if (animator == null)
             return;
 
-        animator.SetFloat("Speed", Mathf.Abs(body.linearVelocity.x));
+        float horizontalSpeed = Mathf.Abs(body.linearVelocity.x);
+        bool isWalking = state == PlayerState.Normal && isGrounded &&
+                         horizontalSpeed > walkingAnimationThreshold;
+
+        animator.SetFloat("Speed", horizontalSpeed);
         animator.SetFloat("VerticalSpeed", body.linearVelocity.y);
         animator.SetBool("Grounded", isGrounded);
+        animator.SetBool("IsWalking", isWalking);
     }
 
     private void SetAnimatorTrigger(string parameterName)
