@@ -9,6 +9,7 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
     private readonly HashSet<IDamageable> hitTargets = new();
     private BoxCollider2D hitbox;
     private Vector2 attackDirection = Vector2.right;
+    private PlayerComboCounter comboCounter;
 
     private void Awake()
     {
@@ -18,6 +19,8 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
     public void BeginAttack(Vector2 direction)
     {
         CacheHitbox();
+        if (comboCounter == null)
+            comboCounter = GetComponentInParent<PlayerComboCounter>();
         attackDirection = direction.normalized;
         hitTargets.Clear();
         gameObject.SetActive(true);
@@ -39,6 +42,16 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        TryHitTarget(other);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        TryHitTarget(other);
+    }
+
+    private void TryHitTarget(Collider2D other)
+    {
         IDamageable target = FindInterface<IDamageable>(other);
         if (target == null || !hitTargets.Add(target))
             return;
@@ -56,7 +69,11 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
         }
 
         if (allowedDamage > 0)
+        {
             target.TakeDamage(allowedDamage, other.ClosestPoint(transform.position), attackDirection);
+            if (comboCounter != null)
+                comboCounter.RegisterSuccessfulHit();
+        }
 
         if (oathSystem != null)
             oathSystem.CompletePlayerMeleeHit(targetObject);

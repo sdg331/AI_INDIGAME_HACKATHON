@@ -25,7 +25,7 @@ public sealed class PlayerController2D : MonoBehaviour
     [Header("Guard / Parry")]
     [SerializeField, Min(0.01f)] private float parryWindow = 0.2f;
     [SerializeField, Min(0f)] private float guardCooldown = 0.5f;
-    [SerializeField, Min(0f)] private float groggyDuration = 1.5f;
+    [SerializeField, Min(0f)] private float groggyDuration = 2f;
 
     [Header("Roll")]
     [SerializeField, Min(0f)] private float rollSpeed = 12f;
@@ -58,6 +58,7 @@ public sealed class PlayerController2D : MonoBehaviour
     private bool coyoteJumpConsumed;
     private IDamageable damageReceiver;
     private PhysicsMaterial2D frictionlessMaterial;
+    private PlayerComboCounter comboCounter;
 
 
     private enum PlayerState
@@ -74,6 +75,7 @@ public sealed class PlayerController2D : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
         mainCamera = Camera.main;
         ResolveEntityInterfaces();
+        SetupPlayerStatusSystems();
 
         if (preventWallSticking)
             ApplyFrictionlessMovementMaterial();
@@ -186,6 +188,16 @@ public sealed class PlayerController2D : MonoBehaviour
             if (playerCollider != null && !playerCollider.isTrigger)
                 playerCollider.sharedMaterial = frictionlessMaterial;
         }
+    }
+
+    private void SetupPlayerStatusSystems()
+    {
+        comboCounter = GetComponent<PlayerComboCounter>();
+        if (comboCounter == null)
+            comboCounter = gameObject.AddComponent<PlayerComboCounter>();
+
+        PlayerHealth playerHealth = damageReceiver as PlayerHealth;
+        PlayerStatusHUD.GetOrCreate().Bind(playerHealth, comboCounter);
     }
 
     private bool CanMove() => state == PlayerState.Normal || state == PlayerState.Attacking;
@@ -343,7 +355,18 @@ public sealed class PlayerController2D : MonoBehaviour
         }
 
         if (damageReceiverBehaviour != null)
+        {
             Debug.LogError("Damage Receiver Behaviour는 IDamageable을 구현해야 합니다.", this);
+            damageReceiverBehaviour = null;
+        }
+
+        // 별도의 엔티티 체력 컴포넌트가 아직 없다면 기본 구현을 자동으로 연결한다.
+        PlayerHealth playerHealth = GetComponent<PlayerHealth>();
+        if (playerHealth == null)
+            playerHealth = gameObject.AddComponent<PlayerHealth>();
+
+        damageReceiver = playerHealth;
+        damageReceiverBehaviour = playerHealth;
     }
 
     private void FaceMouse()
