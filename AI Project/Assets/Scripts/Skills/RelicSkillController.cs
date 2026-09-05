@@ -5,6 +5,35 @@ using UnityEngine.InputSystem;
 
 public sealed class RelicSkillController : MonoBehaviour
 {
+    private readonly struct GroggyTarget
+    {
+        public readonly Transform Transform;
+        private readonly MeleeEnemyAI enemy;
+        private readonly BossAI boss;
+
+        public GroggyTarget(MeleeEnemyAI target)
+        {
+            enemy = target;
+            boss = null;
+            Transform = target.transform;
+        }
+
+        public GroggyTarget(BossAI target)
+        {
+            enemy = null;
+            boss = target;
+            Transform = target.transform;
+        }
+
+        public void Apply(float duration, GameObject source)
+        {
+            if (boss != null)
+                boss.ForceFinalGroggy(source);
+            else if (enemy != null)
+                enemy.EnterGroggy(duration, source);
+        }
+    }
+
     [Header("Pushback")]
     [SerializeField, Min(0f)] private float pushbackRadius = 4f;
     [SerializeField, Min(0f)] private float pushbackForce = 10f;
@@ -16,6 +45,7 @@ public sealed class RelicSkillController : MonoBehaviour
     [SerializeField, Min(0f)] private float groggyBuildupPerHit = 2f;
 
     [Header("Slash Wave")]
+    [SerializeField] private GameObject slashWavePrefab;
     [SerializeField, Min(0f)] private float slashWaveSpeed = 12f;
     [SerializeField, Min(0.1f)] private float slashWaveLifetime = 2.5f;
 
@@ -161,9 +191,14 @@ public sealed class RelicSkillController : MonoBehaviour
         }
 
         Vector2 direction = GetMouseDirection();
-        GameObject projectileObject = new("SlashWave");
-        projectileObject.transform.position = transform.position + (Vector3)(direction * 0.8f);
-        SlashWaveProjectile projectile = projectileObject.AddComponent<SlashWaveProjectile>();
+        GameObject projectileObject = Instantiate(
+    slashWavePrefab,
+    transform.position + (Vector3)(direction * 0.8f),
+    Quaternion.identity);
+
+        SlashWaveProjectile projectile =
+            projectileObject.GetComponent<SlashWaveProjectile>();
+
         projectile.Initialize(direction, meleeHitbox != null ? meleeHitbox.Damage : 1,
             slashWaveSpeed, slashWaveLifetime, combo, this);
         return true;
@@ -179,20 +214,25 @@ public sealed class RelicSkillController : MonoBehaviour
         }
 
         int targetCount = 1 + (consumed - 15) / 5;
-        MeleeEnemyAI[] enemies = FindObjectsByType<MeleeEnemyAI>(FindObjectsSortMode.None);
-        List<MeleeEnemyAI> visibleEnemies = new();
-        foreach (MeleeEnemyAI enemy in enemies)
+        List<GroggyTarget> visibleTargets = new();
+        foreach (MeleeEnemyAI enemy in FindObjectsByType<MeleeEnemyAI>(FindObjectsSortMode.None))
         {
             if (!enemy.IsDead && !enemy.IsIncapacitated && IsVisible(enemy.transform.position))
-                visibleEnemies.Add(enemy);
+                visibleTargets.Add(new GroggyTarget(enemy));
         }
 
-        visibleEnemies.Sort((left, right) =>
-            Vector2.SqrMagnitude(left.transform.position - transform.position)
-                .CompareTo(Vector2.SqrMagnitude(right.transform.position - transform.position)));
+        foreach (BossAI boss in FindObjectsByType<BossAI>(FindObjectsSortMode.None))
+        {
+            if (!boss.IsDefeated && IsVisible(boss.transform.position))
+                visibleTargets.Add(new GroggyTarget(boss));
+        }
 
-        for (int i = 0; i < Mathf.Min(targetCount, visibleEnemies.Count); i++)
-            visibleEnemies[i].EnterGroggy(explosiveGroggyDuration, gameObject);
+        visibleTargets.Sort((left, right) =>
+            Vector2.SqrMagnitude(left.Transform.position - transform.position)
+                .CompareTo(Vector2.SqrMagnitude(right.Transform.position - transform.position)));
+
+        for (int i = 0; i < Mathf.Min(targetCount, visibleTargets.Count); i++)
+            visibleTargets[i].Apply(explosiveGroggyDuration, gameObject);
         return true;
     }
 

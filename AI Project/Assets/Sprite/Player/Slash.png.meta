@@ -1,31 +1,40 @@
 fileFormatVersion: 2
-guid: 0b0340c6d2745fd43a5809d80d7e1d54
+guid: 0d1080e8d7162c04bb915887f2afaaaf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7503402373696077091
-    second: PlayerAttack_0
+      213: 4176362632249098406
+    second: Slash_0
   - first:
-      213: -4552651117439710298
-    second: PlayerAttack_1
+      213: -3696019449777573715
+    second: Slash_1
   - first:
-      213: 2612168875758253219
-    second: PlayerAttack_2
+      213: 6099374761294450104
+    second: Slash_2
   - first:
-      213: -8173238361443544821
-    second: PlayerAttack_3
+      213: -1817706105750108133
+    second: Slash_3
   - first:
-      213: 3291024073344894140
-    second: PlayerAttack_4
+      213: -1305193885933302247
+    second: Slash_4
   - first:
-      213: -403862787636015564
-    second: PlayerAttack_5
+      213: 6922725289032308390
+    second: Slash_5
   - first:
-      213: -7427724726082570653
-    second: PlayerAttack_6
+      213: -4407079611941592608
+    second: Slash_6
   - first:
-      213: -4933628155599994406
-    second: PlayerAttack_7
+      213: -8542888516237818739
+    second: Slash_7
+  - first:
+      213: 1507707074903934712
+    second: Slash_8
+  - first:
+      213: 9050163397280443799
+    second: Slash_9
+  - first:
+      213: -7470132098068099360
+    second: Slash_10
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +81,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -121,177 +130,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlayerAttack_0
+      name: Slash_0
       rect:
         serializedVersion: 2
-        x: 31
+        x: 0
         y: 0
-        width: 35
-        height: 62
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dd2c50dbb4f8ed790800000000000000
-      internalID: -7503402373696077091
+      spriteID: 6a04c6ccfab65f930800000000000000
+      internalID: 4176362632249098406
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_1
+      name: Slash_1
       rect:
         serializedVersion: 2
-        x: 104
+        x: 64
         y: 0
-        width: 56
-        height: 61
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6ab88befdebb1d0c0800000000000000
-      internalID: -4552651117439710298
+      spriteID: da0b21d84e915bcc0800000000000000
+      internalID: -3696019449777573715
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_2
+      name: Slash_2
       rect:
         serializedVersion: 2
-        x: 198
+        x: 128
         y: 0
-        width: 57
-        height: 61
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3a4f6eca0c9404420800000000000000
-      internalID: 2612168875758253219
+      spriteID: 8bd40fe870555a450800000000000000
+      internalID: 6099374761294450104
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_3
+      name: Slash_3
       rect:
         serializedVersion: 2
-        x: 319
+        x: 192
         y: 0
-        width: 36
-        height: 74
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b01df819303d29e80800000000000000
-      internalID: -8173238361443544821
+      spriteID: b18c4bc6de536c6e0800000000000000
+      internalID: -1817706105750108133
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_4
+      name: Slash_4
       rect:
         serializedVersion: 2
-        x: 416
+        x: 256
         y: 0
-        width: 62
-        height: 62
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cb44bf645f01cad20800000000000000
-      internalID: 3291024073344894140
+      spriteID: 91e0fe1731503ede0800000000000000
+      internalID: -1305193885933302247
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_5
+      name: Slash_5
       rect:
         serializedVersion: 2
-        x: 513
+        x: 320
         y: 0
-        width: 61
-        height: 62
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 43ec4f43fe0356af0800000000000000
-      internalID: -403862787636015564
+      spriteID: 6a65262e8f5721060800000000000000
+      internalID: 6922725289032308390
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_6
+      name: Slash_6
       rect:
         serializedVersion: 2
-        x: 610
+        x: 384
         y: 0
-        width: 42
-        height: 62
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 366767427bb6be890800000000000000
-      internalID: -7427724726082570653
+      spriteID: 0e1ea515178e6d2c0800000000000000
+      internalID: -4407079611941592608
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_7
+      name: Slash_7
       rect:
         serializedVersion: 2
-        x: 704
+        x: 448
         y: 0
-        width: 41
-        height: 62
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ad1c89bf45b388bb0800000000000000
-      internalID: -4933628155599994406
+      spriteID: d8481e91820917980800000000000000
+      internalID: -8542888516237818739
       vertices: []
       indices: 
       edges: []
@@ -300,7 +309,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b574d0a0fb51ad748afc8d2e0d8ede12
     internalID: 0
     vertices: []
     indices: 
@@ -308,16 +317,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      PlayerAttack_0: -7503402373696077091
-      PlayerAttack_1: -4552651117439710298
-      PlayerAttack_2: 2612168875758253219
-      PlayerAttack_3: -8173238361443544821
-      PlayerAttack_4: 3291024073344894140
-      PlayerAttack_5: -403862787636015564
-      PlayerAttack_6: -7427724726082570653
-      PlayerAttack_7: -4933628155599994406
+      Slash_0: 4176362632249098406
+      Slash_1: -3696019449777573715
+      Slash_2: 6099374761294450104
+      Slash_3: -1817706105750108133
+      Slash_4: -1305193885933302247
+      Slash_5: 6922725289032308390
+      Slash_6: -4407079611941592608
+      Slash_7: -8542888516237818739
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

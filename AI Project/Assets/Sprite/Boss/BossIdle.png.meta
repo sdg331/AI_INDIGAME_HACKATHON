@@ -1,31 +1,19 @@
 fileFormatVersion: 2
-guid: 0b0340c6d2745fd43a5809d80d7e1d54
+guid: 6685845cd0978564a8c8a7ebbd93d379
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7503402373696077091
-    second: PlayerAttack_0
+      213: -2240994688644343673
+    second: BossIdle_0
   - first:
-      213: -4552651117439710298
-    second: PlayerAttack_1
+      213: 4422111536944459240
+    second: BossIdle_1
   - first:
-      213: 2612168875758253219
-    second: PlayerAttack_2
+      213: 7185010564812441981
+    second: BossIdle_2
   - first:
-      213: -8173238361443544821
-    second: PlayerAttack_3
-  - first:
-      213: 3291024073344894140
-    second: PlayerAttack_4
-  - first:
-      213: -403862787636015564
-    second: PlayerAttack_5
-  - first:
-      213: -7427724726082570653
-    second: PlayerAttack_6
-  - first:
-      213: -4933628155599994406
-    second: PlayerAttack_7
+      213: 4213448673364268264
+    second: BossIdle_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +60,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 60
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -121,12 +109,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlayerAttack_0
+      name: BossIdle_0
       rect:
         serializedVersion: 2
-        x: 31
+        x: 11
         y: 0
-        width: 35
+        width: 43
         height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -136,130 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dd2c50dbb4f8ed790800000000000000
-      internalID: -7503402373696077091
+      spriteID: 78811d7343366e0e0800000000000000
+      internalID: -2240994688644343673
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_1
+      name: BossIdle_1
       rect:
         serializedVersion: 2
-        x: 104
-        y: 0
-        width: 56
-        height: 61
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6ab88befdebb1d0c0800000000000000
-      internalID: -4552651117439710298
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlayerAttack_2
-      rect:
-        serializedVersion: 2
-        x: 198
-        y: 0
-        width: 57
-        height: 61
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3a4f6eca0c9404420800000000000000
-      internalID: 2612168875758253219
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlayerAttack_3
-      rect:
-        serializedVersion: 2
-        x: 319
-        y: 0
-        width: 36
-        height: 74
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b01df819303d29e80800000000000000
-      internalID: -8173238361443544821
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlayerAttack_4
-      rect:
-        serializedVersion: 2
-        x: 416
-        y: 0
-        width: 62
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cb44bf645f01cad20800000000000000
-      internalID: 3291024073344894140
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlayerAttack_5
-      rect:
-        serializedVersion: 2
-        x: 513
-        y: 0
-        width: 61
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 43ec4f43fe0356af0800000000000000
-      internalID: -403862787636015564
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlayerAttack_6
-      rect:
-        serializedVersion: 2
-        x: 610
+        x: 76
         y: 0
         width: 42
-        height: 62
+        height: 63
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -268,19 +146,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 366767427bb6be890800000000000000
-      internalID: -7427724726082570653
+      spriteID: 8ed2bb4730f7e5d30800000000000000
+      internalID: 4422111536944459240
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_7
+      name: BossIdle_2
       rect:
         serializedVersion: 2
-        x: 704
+        x: 139
         y: 0
-        width: 41
+        width: 43
         height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -290,8 +168,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ad1c89bf45b388bb0800000000000000
-      internalID: -4933628155599994406
+      spriteID: d7903177a0946b360800000000000000
+      internalID: 7185010564812441981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BossIdle_3
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 0
+        width: 44
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e4d73f9e3d297a30800000000000000
+      internalID: 4213448673364268264
       vertices: []
       indices: 
       edges: []
@@ -310,14 +210,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PlayerAttack_0: -7503402373696077091
-      PlayerAttack_1: -4552651117439710298
-      PlayerAttack_2: 2612168875758253219
-      PlayerAttack_3: -8173238361443544821
-      PlayerAttack_4: 3291024073344894140
-      PlayerAttack_5: -403862787636015564
-      PlayerAttack_6: -7427724726082570653
-      PlayerAttack_7: -4933628155599994406
+      BossIdle_0: -2240994688644343673
+      BossIdle_1: 4422111536944459240
+      BossIdle_2: 7185010564812441981
+      BossIdle_3: 4213448673364268264
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

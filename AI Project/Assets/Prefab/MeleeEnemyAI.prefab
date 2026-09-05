@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6502041171031288640}
   - component: {fileID: 3391658379943155618}
   - component: {fileID: 2511940622942984512}
+  - component: {fileID: 6841281516326020453}
   m_Layer: 6
   m_Name: Attacck
   m_TagString: Untagged
@@ -83,8 +84,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0.48991108, b: 0, a: 1}
+  m_Sprite: {fileID: 6099374761294450104, guid: 0d1080e8d7162c04bb915887f2afaaaf, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -151,6 +152,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 472c03f95cf12904bbdc6d81c661bbfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackHitbox
+--- !u!95 &6841281516326020453
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815240730443651241}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 89503903ef9865141bce39ed15504dab, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4959874746930952953
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,6 +441,7 @@ MonoBehaviour:
   groggyBuildupThreshold: 3
   characterSprite: {fileID: 0}
   animator: {fileID: 0}
+  spriteFacesRightByDefault: 1
   movementAnimationThreshold: 0.05
   healthBar: {fileID: 0}
   ignoreBodyCollisionWithPlayer: 1

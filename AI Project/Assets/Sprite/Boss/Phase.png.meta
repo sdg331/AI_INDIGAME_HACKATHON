@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 0b0340c6d2745fd43a5809d80d7e1d54
+guid: 35d71ae443b84394abdfe2822ef30a5c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7503402373696077091
-    second: PlayerAttack_0
+      213: -6882364292984843655
+    second: Phase_0
   - first:
-      213: -4552651117439710298
-    second: PlayerAttack_1
+      213: 897071486940687280
+    second: Phase_1
   - first:
-      213: 2612168875758253219
-    second: PlayerAttack_2
+      213: 4372143623308747745
+    second: Phase_2
   - first:
-      213: -8173238361443544821
-    second: PlayerAttack_3
+      213: -3986170380342490375
+    second: Phase_3
   - first:
-      213: 3291024073344894140
-    second: PlayerAttack_4
+      213: -1630397506950022995
+    second: Phase_4
   - first:
-      213: -403862787636015564
-    second: PlayerAttack_5
+      213: -3690190918763790305
+    second: Phase_5
   - first:
-      213: -7427724726082570653
-    second: PlayerAttack_6
+      213: 1596862963175479197
+    second: Phase_6
   - first:
-      213: -4933628155599994406
-    second: PlayerAttack_7
+      213: 4459210918679588884
+    second: Phase_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 60
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -121,12 +121,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlayerAttack_0
+      name: Phase_0
       rect:
         serializedVersion: 2
-        x: 31
+        x: 9
         y: 0
-        width: 35
+        width: 43
         height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -136,20 +136,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dd2c50dbb4f8ed790800000000000000
-      internalID: -7503402373696077091
+      spriteID: 9725ecdc32eec70a0800000000000000
+      internalID: -6882364292984843655
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_1
+      name: Phase_1
       rect:
         serializedVersion: 2
-        x: 104
+        x: 73
         y: 0
-        width: 56
-        height: 61
+        width: 43
+        height: 60
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +158,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6ab88befdebb1d0c0800000000000000
-      internalID: -4552651117439710298
+      spriteID: 0bb2b35b3c9037c00800000000000000
+      internalID: 897071486940687280
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_2
+      name: Phase_2
       rect:
         serializedVersion: 2
-        x: 198
+        x: 137
         y: 0
-        width: 57
-        height: 61
+        width: 43
+        height: 60
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -180,20 +180,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3a4f6eca0c9404420800000000000000
-      internalID: 2612168875758253219
+      spriteID: 1e3ae46f579fcac30800000000000000
+      internalID: 4372143623308747745
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_3
+      name: Phase_3
       rect:
         serializedVersion: 2
-        x: 319
+        x: 201
         y: 0
-        width: 36
-        height: 74
+        width: 43
+        height: 60
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -202,19 +202,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b01df819303d29e80800000000000000
-      internalID: -8173238361443544821
+      spriteID: 9fa8081a8274ea8c0800000000000000
+      internalID: -3986170380342490375
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_4
+      name: Phase_4
       rect:
         serializedVersion: 2
-        x: 416
+        x: 265
         y: 0
-        width: 62
+        width: 43
         height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -224,19 +224,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cb44bf645f01cad20800000000000000
-      internalID: 3291024073344894140
+      spriteID: da8bf8b0b1aaf59e0800000000000000
+      internalID: -1630397506950022995
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_5
+      name: Phase_5
       rect:
         serializedVersion: 2
-        x: 513
+        x: 329
         y: 0
-        width: 61
+        width: 43
         height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -246,19 +246,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 43ec4f43fe0356af0800000000000000
-      internalID: -403862787636015564
+      spriteID: f1046bd29eec9ccc0800000000000000
+      internalID: -3690190918763790305
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_6
+      name: Phase_6
       rect:
         serializedVersion: 2
-        x: 610
+        x: 393
         y: 0
-        width: 42
+        width: 43
         height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -268,19 +268,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 366767427bb6be890800000000000000
-      internalID: -7427724726082570653
+      spriteID: d975d0b8762392610800000000000000
+      internalID: 1596862963175479197
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PlayerAttack_7
+      name: Phase_7
       rect:
         serializedVersion: 2
-        x: 704
+        x: 457
         y: 0
-        width: 41
+        width: 43
         height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -290,8 +290,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ad1c89bf45b388bb0800000000000000
-      internalID: -4933628155599994406
+      spriteID: 410b07264bc42ed30800000000000000
+      internalID: 4459210918679588884
       vertices: []
       indices: 
       edges: []
@@ -310,14 +310,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PlayerAttack_0: -7503402373696077091
-      PlayerAttack_1: -4552651117439710298
-      PlayerAttack_2: 2612168875758253219
-      PlayerAttack_3: -8173238361443544821
-      PlayerAttack_4: 3291024073344894140
-      PlayerAttack_5: -403862787636015564
-      PlayerAttack_6: -7427724726082570653
-      PlayerAttack_7: -4933628155599994406
+      Phase_0: -6882364292984843655
+      Phase_1: 897071486940687280
+      Phase_2: 4372143623308747745
+      Phase_3: -3986170380342490375
+      Phase_4: -1630397506950022995
+      Phase_5: -3690190918763790305
+      Phase_6: 1596862963175479197
+      Phase_7: 4459210918679588884
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

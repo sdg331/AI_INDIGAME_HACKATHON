@@ -17,6 +17,8 @@ public class PlayerSoundTest : MonoBehaviour
 
 
         [SerializeField] private GameObject dashEffectPrefab;
+    [SerializeField] private GameObject pushEffectPrefab;
+
 
     public void SpawnAttackEffect()
     {
@@ -33,9 +35,25 @@ public class PlayerSoundTest : MonoBehaviour
         }
         effect.transform.localScale = scale;
 
+        Destroy(effect, 0.8f);
+    }
 
 
+    public void SpawnPushEffect()
+    {
+        GameObject effect = Instantiate(
+            pushEffectPrefab,
+            transform.position,
+            Quaternion.identity);
 
-        Destroy(effect, 1f);
+        // 플레이어 방향에 맞춰 효과 반전
+        Vector3 scale = effect.transform.localScale;
+        if (transform.GetComponent<SpriteRenderer>().flipX)
+        {
+            scale.x *= -1;
+        }
+        effect.transform.localScale = scale;
+
+        Destroy(effect, 0.8f);
     }
 }

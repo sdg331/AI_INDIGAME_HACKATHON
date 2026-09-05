@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfabd469410eae45b8bc9cfaea6de80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
-  enemyPrefabs: []
+  enemyPrefabs:
+  - {fileID: 8585495040421581013, guid: e37ec31f523175943a704f35dd745992, type: 3}
 --- !u!1 &716350876616644745
 GameObject:
   m_ObjectHideFlags: 0
@@ -3192,7 +3193,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfabd469410eae45b8bc9cfaea6de80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
-  enemyPrefabs: []
+  enemyPrefabs:
+  - {fileID: 8585495040421581013, guid: e37ec31f523175943a704f35dd745992, type: 3}
 --- !u!1 &4528058765370981139
 GameObject:
   m_ObjectHideFlags: 0
@@ -3328,7 +3330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfabd469410eae45b8bc9cfaea6de80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
-  enemyPrefabs: []
+  enemyPrefabs:
+  - {fileID: 8585495040421581013, guid: e37ec31f523175943a704f35dd745992, type: 3}
 --- !u!1 &7961973120102426268
 GameObject:
   m_ObjectHideFlags: 0
@@ -3373,7 +3376,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfabd469410eae45b8bc9cfaea6de80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPoint
-  enemyPrefabs: []
+  enemyPrefabs:
+  - {fileID: 8585495040421581013, guid: e37ec31f523175943a704f35dd745992, type: 3}
 --- !u!1 &8242736695575209143
 GameObject:
   m_ObjectHideFlags: 0

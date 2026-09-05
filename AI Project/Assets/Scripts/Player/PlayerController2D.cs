@@ -251,6 +251,7 @@ public sealed class PlayerController2D : MonoBehaviour
         isAttackFacingLocked = true;
         body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
         SetAnimatorTrigger("Attack");
+        SoundManager.Play("slash#3",0.3f);
 
         yield return new WaitForSeconds(attackWindup);
         TriggerAttackCameraShake();
