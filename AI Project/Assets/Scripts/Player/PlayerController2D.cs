@@ -237,6 +237,10 @@ public sealed class PlayerController2D : MonoBehaviour
 
     public PlayerHitResult ReceiveEnemyAttack(int damage, GameObject attacker, Vector2 hitPoint)
     {
+        OathSystem oathSystem = OathSystem.Instance;
+        if (oathSystem != null)
+            oathSystem.RegisterEnemyAttack(attacker);
+
         if (IsInvulnerable)
             return PlayerHitResult.Invulnerable;
 

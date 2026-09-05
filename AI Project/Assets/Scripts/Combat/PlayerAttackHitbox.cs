@@ -43,7 +43,23 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
         if (target == null || !hitTargets.Add(target))
             return;
 
-        target.TakeDamage(damage, other.ClosestPoint(transform.position), attackDirection);
+        GameObject targetObject = target is MonoBehaviour behaviour
+            ? behaviour.gameObject
+            : other.gameObject;
+
+        int allowedDamage = damage;
+        OathSystem oathSystem = OathSystem.Instance;
+        if (oathSystem != null &&
+            !oathSystem.TryPreparePlayerMeleeHit(targetObject, damage, out allowedDamage))
+        {
+            return;
+        }
+
+        if (allowedDamage > 0)
+            target.TakeDamage(allowedDamage, other.ClosestPoint(transform.position), attackDirection);
+
+        if (oathSystem != null)
+            oathSystem.CompletePlayerMeleeHit(targetObject);
     }
 
     private static T FindInterface<T>(Collider2D other) where T : class
