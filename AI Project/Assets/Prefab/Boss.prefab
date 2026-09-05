@@ -243,6 +243,7 @@ MonoBehaviour:
   preferredMaxDistance: 5
   phase2MoveSpeedMultiplier: 1.45
   ignoreBodyCollisionWithPlayer: 1
+  bossDisplayName: VARGAL
   maxHealth: 100
   phaseTransitionHpRatio: 0.5
   groggyHpRatio: 0.1
@@ -302,7 +303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1270314661645086764
 Transform:
   m_ObjectHideFlags: 0

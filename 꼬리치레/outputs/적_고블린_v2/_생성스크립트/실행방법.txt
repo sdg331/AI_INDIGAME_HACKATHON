@@ -1,0 +1,8 @@
+필요: Python 3, pillow, numpy, scipy. outputs/적_고블린_v1/ (v1 시트) 과 프로젝트 폴더의 적 2.png (공격 접촉 포즈 원본) 이 있어야 한다. 콘솔 인코딩: PYTHONIOENCODING=utf-8.
+순서대로 실행:
+  python gob_idle_hit.py
+  python gob_walk.py
+  python gob_attack.py
+  python gob_groggy.py
+  python gob_qa.py
+gob_lib.py 의 ROOT 경로를 프로젝트 폴더로 맞춘다. 모든 출력은 outputs/적_고블린_v2/ 에 쓴다.

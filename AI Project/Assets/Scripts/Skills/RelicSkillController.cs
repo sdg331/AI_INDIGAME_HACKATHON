@@ -167,6 +167,8 @@ public sealed class RelicSkillController : MonoBehaviour
             enemy.ApplyPushback(direction * pushbackForce, pushbackMovementLock);
         }
 
+        if (SkillEffects.Instance != null)
+            SkillEffects.Instance.PlayPushback(transform);
         return true;
     }
 
@@ -179,6 +181,12 @@ public sealed class RelicSkillController : MonoBehaviour
         }
 
         groggyBuffEndsAt = Time.time + groggyBuffDuration;
+        if (SkillEffects.Instance != null)
+        {
+            PlayerController2D controller = GetComponent<PlayerController2D>();
+            float facing = controller != null ? controller.FacingSign : 1f;
+            SkillEffects.Instance.PlayGroggyHaste(transform, facing, groggyBuffDuration);
+        }
         return true;
     }
 
@@ -233,6 +241,9 @@ public sealed class RelicSkillController : MonoBehaviour
 
         for (int i = 0; i < Mathf.Min(targetCount, visibleTargets.Count); i++)
             visibleTargets[i].Apply(explosiveGroggyDuration, gameObject);
+
+        if (SkillEffects.Instance != null)
+            SkillEffects.Instance.PlayExplosiveIncapacitation(transform, consumed);
         return true;
     }
 

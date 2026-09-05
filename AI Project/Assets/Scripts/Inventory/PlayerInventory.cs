@@ -112,6 +112,13 @@ public sealed class PlayerInventory : MonoBehaviour
         ApplyEquippedSword();
         EquippedSwordChanged?.Invoke(EquippedSwordIndex);
         InventoryChanged?.Invoke();
+
+        if (SkillEffects.Instance != null)
+        {
+            PlayerController2D controller = GetComponent<PlayerController2D>();
+            SkillEffects.Instance.PlaySwordSwap(transform, controller != null ? controller.FacingSign : 1f);
+        }
+
         Debug.Log($"[Inventory] 장착 검 교체 → {EquippedSword.DisplayName}", this);
         return true;
     }

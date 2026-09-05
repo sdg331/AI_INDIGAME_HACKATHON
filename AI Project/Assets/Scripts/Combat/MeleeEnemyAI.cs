@@ -65,6 +65,24 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
     [SerializeField] private EnemyHealthBar2D healthBar;
     [SerializeField] private bool ignoreBodyCollisionWithPlayer = true;
 
+    [Header("Tutorial Overrides")]
+    [Tooltip("체력이 줄지 않습니다. 피격 반응과 연격 판정은 그대로 성립합니다.")]
+    [SerializeField] private bool damageImmune;
+    [Tooltip("플레이어를 추격하거나 공격하지 않고 제자리에서 대기합니다.")]
+    [SerializeField] private bool passive;
+
+    public bool DamageImmune
+    {
+        get => damageImmune;
+        set => damageImmune = value;
+    }
+
+    public bool Passive
+    {
+        get => passive;
+        set => passive = value;
+    }
+
     public int CurrentHealth { get; private set; }
     public bool IsDead => currentState == State.Dead;
     public bool IsIncapacitated => currentState == State.Incapacitated;
@@ -162,10 +180,19 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
 
     private void UpdateState(float distance)
     {
+        // 대기 모드로 바뀌면 진행 중이던 추격·공격을 즉시 접고 제자리로 돌아갑니다.
+        if (passive && (currentState == State.Chase || currentState == State.Windup ||
+                        currentState == State.Attack || currentState == State.Recovery))
+        {
+            CancelAttack();
+            StopMoving();
+            ChangeState(State.Idle);
+        }
+
         switch (currentState)
         {
             case State.Idle:
-                if (distance <= detectionRange)
+                if (!passive && distance <= detectionRange)
                     ChangeState(State.Chase);
                 break;
             case State.Chase:
@@ -261,6 +288,14 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
         if (damage <= 0 || IsDead || IsIncapacitated)
             return;
 
+        // 튜토리얼 연격 단계: 체력은 그대로 두고 피격 반응만 재생합니다.
+        // 연격 카운터는 PlayerAttackHitbox가 이 호출 직후에 올리므로 그대로 쌓입니다.
+        if (damageImmune)
+        {
+            SetAnimatorTrigger(HitHash);
+            return;
+        }
+
         CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
         healthBar.SetHealth(CurrentHealth, maxHealth);
         CancelAttack();
@@ -287,6 +322,13 @@ public sealed class MeleeEnemyAI : MonoBehaviour, IDamageable, IGroggyReceiver,
         SetDangerMarker(true);
         float appliedDuration = duration > 0f ? duration : defaultGroggyDuration;
         ChangeTimedState(State.Groggy, appliedDuration);
+
+        if (SkillEffects.Instance != null)
+        {
+            SkillEffects.Instance.PlayGroggyEnter(transform);
+            SkillEffects.Instance.PlayGroggyLoop(transform, appliedDuration);
+        }
+
         Debug.Log($"[Enemy] {name}: 패링됨, {appliedDuration:0.00}초 그로기", this);
     }
 

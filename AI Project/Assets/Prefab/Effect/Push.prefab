@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1937112088785518383}
   - component: {fileID: 6377981055586670751}
   - component: {fileID: 7533271539984093492}
+  - component: {fileID: 3643362052684549196}
   m_Layer: 0
   m_Name: Push
   m_TagString: Untagged
@@ -114,3 +115,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3643362052684549196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8420406680513106838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 881a8a2a775a2db43988d8eb286147b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EffectAutoDestroy
+  useAnimationLength: 1
+  fallbackLifetime: 1
+  extraDelay: 0.05

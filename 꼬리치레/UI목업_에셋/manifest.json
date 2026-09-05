@@ -1,0 +1,138 @@
+{
+ "set": "기사의 맹세 유물 아이콘 도트 초안",
+ "grid": "16x16 · 1px outline #2a1e2c · palette from UI tokens",
+ "assets": [
+  {
+   "id": "R-01",
+   "key": "taunt",
+   "name": "도발",
+   "file": "R-01_taunt.png",
+   "size": "16x16",
+   "colors": 4,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-02",
+   "key": "pull",
+   "name": "끌어당김",
+   "file": "R-02_pull.png",
+   "size": "16x16",
+   "colors": 4,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-03",
+   "key": "dash",
+   "name": "돌진",
+   "file": "R-03_dash.png",
+   "size": "16x16",
+   "colors": 3,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-04",
+   "key": "push",
+   "name": "밀어내기",
+   "file": "R-04_push.png",
+   "size": "16x16",
+   "colors": 4,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-05",
+   "key": "wave",
+   "name": "참격 파동",
+   "file": "R-05_wave.png",
+   "size": "16x16",
+   "colors": 4,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-06",
+   "key": "haste",
+   "name": "그로기 가속",
+   "file": "R-06_haste.png",
+   "size": "16x16",
+   "colors": 4,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-07",
+   "key": "chain",
+   "name": "연쇄 마무리",
+   "file": "R-07_chain.png",
+   "size": "16x16",
+   "colors": 3,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-08",
+   "key": "burst",
+   "name": "폭발적 무력화",
+   "file": "R-08_burst.png",
+   "size": "16x16",
+   "colors": 4,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-09",
+   "key": "timestop",
+   "name": "시간 정지 일격",
+   "file": "R-09_timestop.png",
+   "size": "16x16",
+   "colors": 5,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "R-10",
+   "key": "infinite",
+   "name": "연격 지속",
+   "file": "R-10_infinite.png",
+   "size": "16x16",
+   "colors": 3,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  },
+  {
+   "id": "SEAL",
+   "key": "sigil",
+   "name": "맹세 인장",
+   "file": "SEAL_sigil.png",
+   "size": "16x16",
+   "colors": 5,
+   "pivot": "center",
+   "source": "procedural (PIL, hand-authored pixel map) — this session 2026-09-06",
+   "license": "project-internal, no third-party rights",
+   "status": "draft — 검수 전"
+  }
+ ]
+}

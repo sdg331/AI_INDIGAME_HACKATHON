@@ -14,30 +14,6 @@ TextureImporter:
   - first:
       213: -2526221940451706854
     second: Temp2_3
-  - first:
-      213: 234777863897347215
-    second: Temp2_4
-  - first:
-      213: 528224041575405929
-    second: Temp2_5
-  - first:
-      213: 8729219149963648111
-    second: Temp2_6
-  - first:
-      213: -1755992799426777774
-    second: Temp2_7
-  - first:
-      213: -4306688758514680791
-    second: Temp2_8
-  - first:
-      213: 799521297571061547
-    second: Temp2_9
-  - first:
-      213: -1693120558010320644
-    second: Temp2_10
-  - first:
-      213: 6037607145342615622
-    second: Temp2_11
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -82,7 +58,7 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
+  alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -121,7 +97,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -140,10 +116,10 @@ TextureImporter:
         y: 0
         width: 64
         height: 64
-      alignment: 0
+      alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -151,7 +127,7 @@ TextureImporter:
       spriteID: 2629b77dd7c5ed0b0800000000000000
       internalID: -5702018382648602014
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
@@ -162,10 +138,10 @@ TextureImporter:
         y: 0
         width: 64
         height: 64
-      alignment: 0
+      alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -173,7 +149,7 @@ TextureImporter:
       spriteID: 1252af982494c5020800000000000000
       internalID: 2331819257202615585
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
@@ -184,10 +160,10 @@ TextureImporter:
         y: 0
         width: 64
         height: 64
-      alignment: 0
+      alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -195,7 +171,7 @@ TextureImporter:
       spriteID: 4a7d7b544cc77a190800000000000000
       internalID: -7951249434674210908
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
@@ -206,10 +182,10 @@ TextureImporter:
         y: 0
         width: 64
         height: 64
-      alignment: 0
+      alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -217,31 +193,29 @@ TextureImporter:
       spriteID: a18f397978e01fcd0800000000000000
       internalID: -2526221940451706854
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
-    customData: 
+    customData:
     physicsShape: []
     bones: []
-    spriteID: 5bcd8e79753fc714db06e2963b828d21
+    spriteID:
     internalID: 0
     vertices: []
-    indices: 
+    indices:
     edges: []
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
       Temp2_0: -5702018382648602014
       Temp2_1: 2331819257202615585
       Temp2_2: -7951249434674210908
       Temp2_3: -2526221940451706854
-  mipmapLimitGroupName: 
+  mipmapLimitGroupName:
   pSDRemoveMatte: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

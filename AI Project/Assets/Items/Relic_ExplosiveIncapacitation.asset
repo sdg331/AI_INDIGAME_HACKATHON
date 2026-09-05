@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26fbc3d995adfd4ab3e1d1d6297d759, type: 3}
+  m_Name: Relic_ExplosiveIncapacitation
+  m_EditorClassIdentifier: Assembly-CSharp::RelicDefinition
+  displayName: "\uD3ED\uBC1C\uC801 \uBB34\uB825\uD654"
+  description: "\uCD5C\uC18C \uC5F0\uACA9 15\uB97C \uC804\uBD80 \uC18C\uBAA8\uD574
+    \uD654\uBA74\uC758 \uC801\uB4E4\uC744 \uADF8\uB85C\uAE30 \uC0C1\uD0DC\uB85C \uB9CC\uB4E0\uB2E4."
+  icon: {fileID: 0}
+  skillType: 3

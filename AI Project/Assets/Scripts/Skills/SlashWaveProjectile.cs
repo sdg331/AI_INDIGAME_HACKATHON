@@ -28,13 +28,24 @@ public sealed class SlashWaveProjectile : MonoBehaviour
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         body.linearVelocity = direction.normalized * speed;
 
-        SpriteRenderer renderer = gameObject.AddComponent<SpriteRenderer>();
-        renderer.sprite = GetSprite();
-        renderer.color = new Color(0.65f, 0.9f, 1f, 0.9f);
-        renderer.sortingOrder = 50;
-        transform.localScale = new Vector3(0.8f, 0.18f, 1f);
-        transform.rotation = Quaternion.Euler(0f, 0f,
-            Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+        // 프리팹에 검기 스프라이트가 이미 있으면 그것을 그대로 씁니다.
+        // 없을 때만 예전처럼 흰 사각형을 만들어 대신 보여 줍니다.
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if (renderer == null)
+        {
+            renderer = gameObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = GetSprite();
+            renderer.color = new Color(0.65f, 0.9f, 1f, 0.9f);
+            renderer.sortingOrder = 50;
+            transform.localScale = new Vector3(0.8f, 0.18f, 1f);
+            transform.rotation = Quaternion.Euler(0f, 0f,
+                Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+        }
+        else
+        {
+            // 그려 둔 검기 시트는 세우지 않고 좌우만 뒤집습니다.
+            renderer.flipX = direction.x < 0f;
+        }
 
         Destroy(gameObject, lifetime);
     }

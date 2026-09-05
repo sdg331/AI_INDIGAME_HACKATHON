@@ -70,7 +70,7 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
+  alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 60
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -109,7 +109,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -124,14 +124,14 @@ TextureImporter:
       name: Phase_0
       rect:
         serializedVersion: 2
-        x: 9
+        x: 0
         y: 0
-        width: 43
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -139,21 +139,21 @@ TextureImporter:
       spriteID: 9725ecdc32eec70a0800000000000000
       internalID: -6882364292984843655
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: Phase_1
       rect:
         serializedVersion: 2
-        x: 73
+        x: 64
         y: 0
-        width: 43
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -161,21 +161,21 @@ TextureImporter:
       spriteID: 0bb2b35b3c9037c00800000000000000
       internalID: 897071486940687280
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: Phase_2
       rect:
         serializedVersion: 2
-        x: 137
+        x: 128
         y: 0
-        width: 43
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -183,21 +183,21 @@ TextureImporter:
       spriteID: 1e3ae46f579fcac30800000000000000
       internalID: 4372143623308747745
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: Phase_3
       rect:
         serializedVersion: 2
-        x: 201
+        x: 192
         y: 0
-        width: 43
-        height: 60
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -205,21 +205,21 @@ TextureImporter:
       spriteID: 9fa8081a8274ea8c0800000000000000
       internalID: -3986170380342490375
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: Phase_4
       rect:
         serializedVersion: 2
-        x: 265
+        x: 256
         y: 0
-        width: 43
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -227,21 +227,21 @@ TextureImporter:
       spriteID: da8bf8b0b1aaf59e0800000000000000
       internalID: -1630397506950022995
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: Phase_5
       rect:
         serializedVersion: 2
-        x: 329
+        x: 320
         y: 0
-        width: 43
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -249,21 +249,21 @@ TextureImporter:
       spriteID: f1046bd29eec9ccc0800000000000000
       internalID: -3690190918763790305
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: Phase_6
       rect:
         serializedVersion: 2
-        x: 393
+        x: 384
         y: 0
-        width: 43
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -271,21 +271,21 @@ TextureImporter:
       spriteID: d975d0b8762392610800000000000000
       internalID: 1596862963175479197
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: Phase_7
       rect:
         serializedVersion: 2
-        x: 457
+        x: 448
         y: 0
-        width: 43
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -293,17 +293,17 @@ TextureImporter:
       spriteID: 410b07264bc42ed30800000000000000
       internalID: 4459210918679588884
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
-    customData: 
+    customData:
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID:
     internalID: 0
     vertices: []
-    indices: 
+    indices:
     edges: []
     weights: []
     secondaryTextures: []
@@ -318,8 +318,8 @@ TextureImporter:
       Phase_5: -3690190918763790305
       Phase_6: 1596862963175479197
       Phase_7: 4459210918679588884
-  mipmapLimitGroupName: 
+  mipmapLimitGroupName:
   pSDRemoveMatte: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

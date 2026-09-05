@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -82,7 +83,6 @@ public sealed class PlayerController2D : MonoBehaviour
         if (cameraFollow == null && mainCamera != null)
             cameraFollow = mainCamera.GetComponent<PlayerCameraFollow2D>();
         ResolveEntityInterfaces();
-        SetupPlayerStatusSystems();
 
         if (preventWallSticking)
             ApplyFrictionlessMovementMaterial();
@@ -98,7 +98,13 @@ public sealed class PlayerController2D : MonoBehaviour
 
         if (attackHitbox != null)
             attackHitbox.EndAttack();
+    }
 
+    private void Start()
+    {
+        // HUD 연결은 Start에서 합니다. Awake에서 하면 같은 오브젝트의 PlayerHealth.Awake보다
+        // 먼저 실행되어 체력이 0으로 표시됩니다.
+        SetupPlayerStatusSystems();
         SetupInventorySystems();
     }
 
@@ -332,7 +338,17 @@ public sealed class PlayerController2D : MonoBehaviour
         state = PlayerState.Normal;
     }
 
+    // 적 공격을 받은 결과를 알립니다. 튜토리얼의 패링 성공 판정 등에 사용합니다.
+    public event Action<PlayerHitResult, GameObject> AttackReceived;
+
     public PlayerHitResult ReceiveEnemyAttack(int damage, GameObject attacker, Vector2 hitPoint)
+    {
+        PlayerHitResult result = ResolveEnemyAttack(damage, attacker, hitPoint);
+        AttackReceived?.Invoke(result, attacker);
+        return result;
+    }
+
+    private PlayerHitResult ResolveEnemyAttack(int damage, GameObject attacker, Vector2 hitPoint)
     {
         OathSystem oathSystem = OathSystem.Instance;
         if (oathSystem != null)

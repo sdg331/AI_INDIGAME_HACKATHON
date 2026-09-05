@@ -12,7 +12,14 @@ public sealed class ParallaxBackground2D : MonoBehaviour
         [Range(-1f, 1f)] public float horizontalMultiplier = 0.1f;
         [Range(-1f, 1f)] public float verticalMultiplier = 0.05f;
 
+        [Tooltip("가로로 무한히 이어 붙입니다. 스프라이트 한 장 폭만큼씩 되감아 끝이 보이지 않게 합니다.")]
+        public bool loopHorizontally = true;
+
+        [Tooltip("되감는 폭(월드 단위). 0이면 SpriteRenderer의 스프라이트 폭 × 스케일로 자동 계산합니다.")]
+        [Min(0f)] public float loopWidth;
+
         [NonSerialized] public Vector3 initialPosition;
+        [NonSerialized] public float resolvedLoopWidth;
     }
 
     [Tooltip("숫자가 작을수록 멀리 있는 배경처럼 보입니다.")]
@@ -49,7 +56,19 @@ public sealed class ParallaxBackground2D : MonoBehaviour
                 cameraDelta.x * layer.horizontalMultiplier,
                 cameraDelta.y * (followCameraVertically ? 1f : layer.verticalMultiplier),
                 0f);
-            layer.layerObject.position = layer.initialPosition + offset;
+            Vector3 position = layer.initialPosition + offset;
+
+            // 타일링된 배경은 한 장 폭의 정수배만큼 옮겨도 화면이 똑같으므로,
+            // 카메라에서 반 장 이상 멀어지면 되감아 끝이 드러나지 않게 합니다.
+            if (layer.loopHorizontally && layer.resolvedLoopWidth > 0.001f)
+            {
+                float width = layer.resolvedLoopWidth;
+                float delta = position.x - transform.position.x;
+                float wrapped = Mathf.Repeat(delta + width * 0.5f, width) - width * 0.5f;
+                position.x = transform.position.x + wrapped;
+            }
+
+            layer.layerObject.position = position;
         }
     }
 
@@ -64,6 +83,7 @@ public sealed class ParallaxBackground2D : MonoBehaviour
                 continue;
 
             layer.initialPosition = layer.layerObject.position;
+            layer.resolvedLoopWidth = ResolveLoopWidth(layer);
 
             if (layer.layerObject.IsChildOf(transform))
             {
@@ -74,5 +94,21 @@ public sealed class ParallaxBackground2D : MonoBehaviour
         }
 
         initialized = true;
+    }
+
+    // 되감을 폭을 정합니다. 지정값이 없으면 스프라이트 한 장의 월드 폭을 씁니다.
+    private static float ResolveLoopWidth(ParallaxLayer layer)
+    {
+        if (layer.loopWidth > 0f)
+            return layer.loopWidth;
+
+        SpriteRenderer renderer = layer.layerObject != null
+            ? layer.layerObject.GetComponent<SpriteRenderer>()
+            : null;
+        if (renderer == null || renderer.sprite == null)
+            return 0f;
+
+        float spriteWidth = renderer.sprite.rect.width / renderer.sprite.pixelsPerUnit;
+        return spriteWidth * Mathf.Abs(layer.layerObject.lossyScale.x);
     }
 }

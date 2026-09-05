@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRIUMVIRATUS — UI 목업</title>
+<style>
+:root{
+  /* ── 표면: 따뜻한 뉴트럴 다크(푸른끼 제거) */
+  --s0:#0a0a0c; --s1:rgba(20,20,24,.72); --s2:rgba(28,28,33,.84); --s3:#16161b;
+  /* ── 선: 상단 하이라이트 + 외곽 */
+  --line:rgba(255,255,255,.075); --line2:rgba(255,255,255,.15);
+  --hi:rgba(255,255,255,.07);
+  /* ── 강조 */
+  --me:#d9a441; --me-lo:rgba(217,164,65,.13); --me-hi:#f0c876;
+  --p2:#b04a4a; --p3:#8367b8; --khan:#4d8296;
+  --txt:#e8e2d2; --sub:#9a9184; --dim:#615a4e;
+  --ok:#6aae76; --warn:#d9ab45; --bad:#c05555;
+  --fd:'Noto Serif KR','Nanum Myeongjo',serif;
+  --fb:'Malgun Gothic','맑은 고딕',system-ui,sans-serif;
+  --fm:'D2Coding','Consolas',monospace;
+  /* ── 입체 */
+  --e1:0 1px 2px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.32);
+  --e2:0 2px 4px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.5);
+  --e3:0 8px 16px rgba(0,0,0,.55), 0 32px 80px rgba(0,0,0,.62);
+  --ease:cubic-bezier(.22,.7,.28,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--s0);color:var(--txt);font-family:var(--fb);font-size:13px;
+  height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility}
+button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible{outline:2px solid var(--me);outline-offset:2px;border-radius:6px}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ── 표면 유틸: 블러 + 상단 하이라이트 + 입체 */
+.surf{background:var(--s1);backdrop-filter:blur(20px) saturate(1.35);
+  -webkit-backdrop-filter:blur(20px) saturate(1.35);
+  border:1px solid var(--line);border-radius:8px;
+  box-shadow:var(--e2), inset 0 1px 0 var(--hi)}
+
+/* ══ 맵 ══ */
+#map{position:fixed;inset:0;background:
+  radial-gradient(1300px 760px at 46% 42%,#15161d 0%,#0d0e12 58%,#0a0a0c 100%)}
+#map svg{width:100%;height:100%}
+.hex{stroke:rgba(255,255,255,.045);stroke-width:1;transition:stroke .14s var(--ease)}
+.hex:hover{stroke:rgba(217,164,65,.55);stroke-width:1.6}
+.zoc{fill:none;stroke:rgba(176,74,74,.55);stroke-width:1.2;stroke-dasharray:4 4}
+.tokttl{font-family:var(--fd);font-size:9.5px;text-anchor:middle;fill:#fff;
+  letter-spacing:-.01em}
+
+/* ══ ① 상단 산출 바 ══ */
+#top{position:fixed;top:0;left:0;right:0;height:44px;z-index:40;
+  background:linear-gradient(180deg,rgba(10,10,12,.96) 0%,rgba(10,10,12,.80) 70%,rgba(10,10,12,0) 100%);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  display:flex;align-items:center;padding:0 16px;gap:2px}
+.yld{display:flex;align-items:center;gap:7px;padding:0 13px;height:26px;
+  border-radius:6px;transition:background .14s var(--ease)}
+.yld:hover{background:rgba(255,255,255,.05)}
+.yld+.yld::before{content:'';width:1px;height:14px;background:var(--line);
+  margin-right:13px;margin-left:-13px}
+.yld .i{color:var(--sub)}
+.yld.g .i{color:var(--me)} .yld.f .i{color:#8fb36a} .yld.h .i{color:#c07f8f}
+.yld .v{font-family:var(--fm);font-size:14px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.yld .d{font-family:var(--fm);font-size:10.5px;color:var(--ok);letter-spacing:-.02em}
+.yld .d.neg{color:var(--bad)}
+.yld .cap{font-family:var(--fm);font-size:10px;color:var(--dim)}
+.yld.pol .v{color:#c4b6e8}
+#topright{margin-left:auto;display:flex;align-items:center;gap:18px}
+.dots{display:flex;gap:3px}
+.dots i{width:14px;height:3px;background:rgba(255,255,255,.10);border-radius:2px;
+  transition:background .2s var(--ease)}
+.dots i.done{background:rgba(217,164,65,.42)}
+.dots i.on{background:var(--me);box-shadow:0 0 8px rgba(217,164,65,.5)}
+.tbox{text-align:right}
+.tbox .t{font-family:var(--fd);font-size:17px;letter-spacing:-.02em;line-height:1.1}
+.tbox .s{font-size:10px;color:var(--sub);margin-top:1px}
+.timer{font-family:var(--fm);font-size:16px;color:var(--warn);letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+
+/* ══ ② 좌상단 트래커 ══ */
+#trk{position:fixed;top:56px;left:16px;z-index:35;width:262px;
+  display:flex;flex-direction:column;gap:8px}
+.tk{padding:12px 14px;text-align:left;transition:transform .16s var(--ease),border-color .16s var(--ease)}
+.tk:hover{transform:translateY(-1px);border-color:var(--line2)}
+.tkh{display:flex;align-items:center;gap:9px}
+.tkh .i{color:var(--me)}
+.tk.civic .tkh .i{color:#a894d8}
+.tkt{font-size:12px;letter-spacing:-.01em}
+.tkv{margin-left:auto;font-family:var(--fm);font-size:13px;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.bar{height:5px;background:rgba(255,255,255,.07);border-radius:3px;margin-top:9px;
+  overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.45)}
+.bar>i{display:block;height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--me),var(--me-hi));
+  box-shadow:0 0 10px rgba(217,164,65,.35)}
+.tk.civic .bar>i{background:linear-gradient(90deg,#7f6bb0,#a894d8);box-shadow:0 0 10px rgba(131,103,184,.35)}
+.tks{font-size:10.5px;color:var(--sub);margin-top:7px;line-height:1.45}
+
+/* ══ ③ 라이벌 초상 ══ */
+#riv{position:fixed;top:56px;right:16px;z-index:35;display:flex;flex-direction:column;gap:8px}
+.rv{width:64px;padding:9px 0 8px;text-align:center;position:relative;
+  transition:transform .16s var(--ease),border-color .16s var(--ease)}
+.rv:hover{transform:translateY(-1px);border-color:var(--line2)}
+.rvav{width:34px;height:34px;margin:0 auto;border-radius:8px;display:grid;place-items:center;
+  font-family:var(--fd);font-size:16px;letter-spacing:-.02em}
+.rv.a2 .rvav{background:linear-gradient(160deg,rgba(176,74,74,.30),rgba(176,74,74,.12));
+  border:1px solid rgba(176,74,74,.5);color:#e08282;box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.rv.a3 .rvav{background:linear-gradient(160deg,rgba(131,103,184,.30),rgba(131,103,184,.12));
+  border:1px solid rgba(131,103,184,.5);color:#b9a3e6;box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.rvn{font-size:10px;color:var(--sub);margin-top:5px;letter-spacing:-.01em}
+.rvr{position:absolute;top:5px;left:7px;font-family:var(--fd);font-size:11px;color:var(--sub)}
+.rvb{position:absolute;top:4px;right:5px;font-size:8.5px;padding:1px 4px;border-radius:4px;
+  background:rgba(131,103,184,.85);color:#fff;font-family:var(--fm);letter-spacing:.02em}
+.rvt{width:5px;height:5px;border-radius:50%;margin:5px auto 0}
+.rvt.up{background:var(--bad);box-shadow:0 0 7px rgba(192,85,85,.7)}
+.rvt.flat{background:var(--dim)}
+
+/* ══ ④ 알림 스택 ══ */
+#ntf{position:fixed;right:16px;top:216px;z-index:35;display:flex;flex-direction:column;gap:7px}
+.nt{width:48px;height:48px;display:grid;place-items:center;position:relative;
+  transition:transform .16s var(--ease),border-color .16s var(--ease)}
+.nt:hover{transform:translateY(-1px) scale(1.03);border-color:var(--line2)}
+.nt .i{width:21px;height:21px;color:var(--sub);transition:color .14s var(--ease)}
+.nt:hover .i{color:var(--txt)}
+.nt.hot{border-color:rgba(217,164,65,.42)}
+.nt.hot .i{color:var(--me)}
+.nt.hot::after{content:'';position:absolute;inset:-1px;border-radius:8px;
+  box-shadow:0 0 0 1px rgba(217,164,65,.16),0 0 20px rgba(217,164,65,.14);pointer-events:none}
+.badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;border-radius:9px;
+  background:var(--bad);color:#fff;font-family:var(--fm);font-size:9.5px;
+  display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px rgba(0,0,0,.5);
+  border:1px solid rgba(0,0,0,.3)}
+.tip{position:absolute;right:58px;top:50%;transform:translateY(-50%) translateX(6px);
+  white-space:nowrap;background:var(--s2);backdrop-filter:blur(16px);
+  border:1px solid var(--line2);border-radius:7px;padding:7px 11px;font-size:11.5px;
+  opacity:0;pointer-events:none;transition:opacity .14s var(--ease),transform .14s var(--ease);
+  box-shadow:var(--e2)}
+.nt:hover .tip{opacity:1;transform:translateY(-50%) translateX(0)}
+
+/* ══ ⑤ 좌하단 ══ */
+#lb{position:fixed;left:16px;bottom:16px;z-index:35;width:262px;
+  display:flex;flex-direction:column;gap:8px}
+.sel{overflow:hidden;padding:0}
+.selh{padding:12px 14px 11px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--line)}
+.selav{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;
+  font-family:var(--fd);font-size:15px;color:var(--me);letter-spacing:-.02em;
+  background:linear-gradient(160deg,rgba(217,164,65,.26),rgba(217,164,65,.09));
+  border:1px solid rgba(217,164,65,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.seln{font-family:var(--fd);font-size:15px;letter-spacing:-.02em;line-height:1.15}
+.sels{font-size:10.5px;color:var(--sub);margin-top:2px}
+.selbody{padding:11px 14px 0}
+.hpn{font-family:var(--fm);font-size:10.5px;color:var(--sub);margin-top:5px;
+  display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.bar.hp>i{background:linear-gradient(90deg,#4f9a5e,#6aae76);box-shadow:0 0 8px rgba(106,174,118,.3)}
+.bar.hp.mid>i{background:linear-gradient(90deg,#b8912f,#d9ab45);box-shadow:0 0 8px rgba(217,171,69,.3)}
+.stats{display:flex;padding:12px 14px 2px;gap:2px}
+.st{flex:1;text-align:center;padding:5px 0;border-radius:6px;transition:background .14s}
+.st:hover{background:rgba(255,255,255,.04)}
+.st b{display:block;font-family:var(--fm);font-size:15px;font-weight:400;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums}
+.st span{font-size:9.5px;color:var(--sub);margin-top:1px;display:block}
+.trrow{padding:6px 14px 12px;display:flex;align-items:center;gap:7px}
+.trchip{font-family:var(--fm);font-size:10px;padding:3px 8px;border-radius:5px;
+  background:rgba(217,164,65,.14);border:1px solid rgba(217,164,65,.4);color:var(--me-hi)}
+.trsub{font-size:10px;color:var(--dim);font-family:var(--fm)}
+.acts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--line);border-top:1px solid var(--line)}
+.acts button{background:rgba(22,22,27,.9);padding:11px 0 9px;display:flex;
+  flex-direction:column;align-items:center;gap:5px;transition:background .14s var(--ease)}
+.acts button:hover:not(:disabled){background:rgba(217,164,65,.10)}
+.acts button:hover:not(:disabled) .i{color:var(--me)}
+.acts .i{width:19px;height:19px;color:var(--sub);transition:color .14s var(--ease)}
+.acts .al{font-size:9.5px;color:var(--sub);letter-spacing:-.01em}
+.acts button.on{background:rgba(217,164,65,.13)}
+.acts button.on .i,.acts button.on .al{color:var(--me)}
+.acts button:disabled{opacity:.28;cursor:default}
+
+#mini{padding:10px}
+#mini svg{display:block;width:100%;height:80px;border-radius:5px}
+.mmt{font-size:10px;color:var(--dim);font-family:var(--fm);margin-bottom:7px;
+  display:flex;justify-content:space-between}
+
+/* ══ ⑥ 턴 종료 ══ */
+#end{position:fixed;right:16px;bottom:16px;z-index:36;padding:15px 30px;text-align:center;
+  min-width:186px;border-radius:9px;
+  background:linear-gradient(165deg,rgba(217,164,65,.26),rgba(217,164,65,.11));
+  border:1px solid rgba(217,164,65,.5);
+  box-shadow:var(--e2),inset 0 1px 0 rgba(255,255,255,.14),0 0 34px rgba(217,164,65,.13);
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease)}
+#end:hover{transform:translateY(-2px);
+  box-shadow:var(--e3),inset 0 1px 0 rgba(255,255,255,.18),0 0 46px rgba(217,164,65,.22)}
+#end:active{transform:translateY(0)}
+#end .big{font-family:var(--fd);font-size:19px;color:var(--me-hi);display:block;letter-spacing:-.02em}
+#end .sm{font-size:10.5px;color:var(--sub);margin-top:3px;display:block;font-family:var(--fm)}
+
+/* ══ 모달 ══ */
+.veil{position:fixed;inset:0;background:rgba(6,6,8,.7);backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);display:none;z-index:60;opacity:0;transition:opacity .2s var(--ease)}
+.veil.on{display:block;opacity:1}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%) scale(.985);
+  width:min(740px,94vw);max-height:86vh;background:var(--s3);
+  border:1px solid var(--line2);border-radius:12px;display:none;z-index:61;
+  flex-direction:column;box-shadow:var(--e3),inset 0 1px 0 rgba(255,255,255,.07);
+  opacity:0;transition:opacity .2s var(--ease),transform .2s var(--ease)}
+.modal.on{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1)}
+.mh{padding:18px 22px 15px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.mt{font-family:var(--fd);font-size:20px;letter-spacing:-.02em}
+.ms{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.5}
+.mx{margin-left:auto;width:30px;height:30px;border:1px solid var(--line);border-radius:7px;
+  color:var(--sub);display:grid;place-items:center;transition:all .14s var(--ease);flex:none}
+.mx:hover{border-color:var(--line2);color:var(--txt);background:rgba(255,255,255,.05)}
+.mx .i{width:15px;height:15px}
+.mb{padding:18px 22px 22px;overflow:auto}
+.mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:9px;
+  justify-content:flex-end;align-items:center}
+h4.sh{font-family:var(--fd);font-size:13px;color:var(--sub);margin:20px 0 9px;letter-spacing:-.01em}
+h4.sh:first-child{margin-top:0}
+.row{display:flex;justify-content:space-between;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
+.row .k{color:var(--sub)}
+.row .v{font-family:var(--fm);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.mini{font-size:10.5px;color:var(--dim);font-family:var(--fm);line-height:1.6}
+.act{padding:9px 17px;border-radius:7px;border:1px solid var(--line2);
+  background:rgba(255,255,255,.04);font-size:12.5px;transition:all .14s var(--ease)}
+.act:hover{background:rgba(255,255,255,.08);transform:translateY(-1px)}
+.act.prim{border-color:rgba(217,164,65,.55);background:rgba(217,164,65,.15);color:var(--me-hi)}
+.act.prim:hover{background:rgba(217,164,65,.24)}
+
+.card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:9px;
+  padding:14px 16px;margin-bottom:10px;transition:border-color .14s var(--ease)}
+.card:hover{border-color:var(--line2)}
+.cardt{font-family:var(--fd);font-size:15px;letter-spacing:-.02em}
+.cardd{font-size:11.5px;color:var(--sub);margin-top:5px;line-height:1.65}
+.vbar{display:flex;height:7px;border-radius:4px;overflow:hidden;margin-top:12px;
+  background:rgba(255,255,255,.07);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.vfor{background:linear-gradient(90deg,#4f9a5e,#6aae76)}
+.vag{background:linear-gradient(90deg,#a04848,#c05555)}
+.vnum{display:flex;justify-content:space-between;font-family:var(--fm);font-size:10.5px;
+  color:var(--sub);margin-top:6px;font-variant-numeric:tabular-nums}
+.vact{display:flex;gap:8px;margin-top:12px}
+.vact button{flex:1;padding:8px 0;font-size:11.5px;border:1px solid var(--line);
+  border-radius:6px;transition:all .14s var(--ease)}
+.vact .yes{border-color:rgba(106,174,118,.4);color:var(--ok)}
+.vact .yes:hover{background:rgba(106,174,118,.12)}
+.vact .no{border-color:rgba(192,85,85,.42);color:#d07070}
+.vact .no:hover{background:rgba(192,85,85,.12)}
+.betr{display:flex;align-items:center;gap:12px;margin-top:12px}
+.betr input{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;
+  background:rgba(255,255,255,.10);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.betr input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:linear-gradient(160deg,var(--me-hi),var(--me));cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.5),0 0 12px rgba(217,164,65,.4)}
+.betv{font-family:var(--fm);font-size:12.5px;color:var(--me-hi);min-width:82px;text-align:right;
+  font-variant-numeric:tabular-nums}
+.gz{margin-bottom:16px}
+.gzt{display:flex;justify-content:space-between;font-size:12.5px;align-items:baseline}
+.gzt .w{color:var(--sub);font-size:10.5px}
+.gzn{font-family:var(--fm);font-size:10.5px;color:var(--sub);margin-top:6px;
+  display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.bar.g1>i{background:linear-gradient(90deg,#a04848,#d07070)}
+.bar.g2>i{background:linear-gradient(90deg,#7f6bb0,#a894d8)}
+.bar.g3>i{background:linear-gradient(90deg,var(--me),var(--me-hi))}
+.fml{background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+  font-family:var(--fm);font-size:11px;color:var(--sub);line-height:1.95;white-space:pre-wrap;margin-top:9px}
+.fml b{color:var(--me-hi);font-weight:400}
+.dg{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.dg .n{width:104px;font-size:12.5px}
+.dg .v{font-family:var(--fm);font-size:11.5px;width:46px;text-align:right;color:var(--sub)}
+.bar.d1>i{background:linear-gradient(90deg,#a04848,#c05555)}
+.bar.d2>i{background:linear-gradient(90deg,var(--me),var(--me-hi))}
+.bar.d3>i{background:linear-gradient(90deg,#7f6bb0,#a894d8)}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.slot{aspect-ratio:1;border:1px dashed var(--line2);border-radius:8px;display:grid;
+  place-items:center;background:rgba(255,255,255,.025);position:relative;
+  transition:all .14s var(--ease)}
+.slot:hover{border-color:rgba(217,164,65,.5)}
+.slot.full{border-style:solid;border-color:rgba(217,164,65,.45);
+  background:linear-gradient(160deg,rgba(217,164,65,.14),rgba(217,164,65,.05))}
+.slot .sn{font-size:10px;color:var(--sub);text-align:center;line-height:1.3;padding:0 4px}
+.slot.full .sn{color:var(--txt)}
+.slot .sc{position:absolute;bottom:5px;right:7px;font-family:var(--fm);font-size:9.5px;color:var(--me)}
+
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);
+  background:var(--s2);backdrop-filter:blur(20px);border:1px solid var(--line2);
+  border-radius:9px;padding:11px 20px;font-size:12.5px;opacity:0;pointer-events:none;
+  z-index:70;transition:opacity .18s var(--ease),transform .18s var(--ease);box-shadow:var(--e2)}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.note{position:fixed;font-family:var(--fm);font-size:10px;color:var(--warn);
+  background:rgba(217,171,69,.10);border:1px solid rgba(217,171,69,.3);
+  border-radius:6px;padding:4px 9px;z-index:38;pointer-events:none;backdrop-filter:blur(8px)}
+body.noteoff .note{display:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ══════════ 2026-08-10 추가 화면 ══════════ */
+
+/* ── 화면 목록 런처 ── */
+#idxb{position:fixed;left:296px;bottom:16px;z-index:70;padding:8px 14px;border-radius:7px;
+  border:1px solid var(--line2);background:rgba(22,22,27,.92);backdrop-filter:blur(14px);
+  font-size:12px;color:var(--txt);box-shadow:var(--e2)}
+#idxb:hover{border-color:rgba(217,164,65,.5);color:var(--me-hi)}
+#idx{position:fixed;left:296px;bottom:56px;top:56px;z-index:70;width:292px;overflow:auto;
+  background:var(--s3);border:1px solid var(--line2);border-radius:10px;box-shadow:var(--e3);
+  padding:12px 0;display:none}
+#idx.on{display:block}
+#idx h5{font-family:var(--fd);font-size:11px;color:var(--sub);padding:9px 16px 4px;letter-spacing:.03em}
+#idx h5:first-child{padding-top:0}
+#idx button{display:block;width:100%;text-align:left;padding:5px 16px;font-size:12px;color:var(--txt);
+  border-left:2px solid transparent}
+#idx button:hover{background:rgba(255,255,255,.055);border-left-color:var(--me)}
+#idx button .tag{float:right;font-family:var(--fm);font-size:9.5px;color:var(--dim)}
+
+/* ── 전체 화면(씬) ── */
+.scene{position:fixed;inset:0;z-index:65;background:var(--s0);display:none;
+  overflow:auto;padding:52px 0 90px}
+.scene.on{display:block}
+.scw{width:min(1080px,92vw);margin:0 auto}
+.sct{font-family:var(--fd);font-size:30px;letter-spacing:-.02em}
+.scs{font-size:12px;color:var(--sub);margin-top:7px;line-height:1.6}
+.schd{display:flex;align-items:flex-start;gap:14px;padding-bottom:20px;margin-bottom:26px;
+  border-bottom:1px solid var(--line)}
+.scx{margin-left:auto}
+
+/* ── 카드 격자 ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+.g2>.card,.g3>.card{margin-bottom:0}
+
+/* 선택형 카드 */
+.pick{cursor:pointer;position:relative}
+.pick.on{border-color:rgba(217,164,65,.6);background:rgba(217,164,65,.07)}
+.pick.on::after{content:'';position:absolute;inset:-1px;border-radius:9px;
+  box-shadow:0 0 0 1px rgba(217,164,65,.45), 0 0 22px rgba(217,164,65,.13);pointer-events:none}
+.pick.no{opacity:.62;cursor:not-allowed;background:rgba(255,255,255,.018)}
+.pick.no .cardt,.pick.no .cardd{color:var(--dim)}
+.pick .why{font-size:11px;color:#d08484;margin-top:9px;font-family:var(--fb);line-height:1.55}
+
+/* 수치 칩 줄 */
+.stats{display:flex;flex-wrap:wrap;gap:14px;margin-top:11px}
+.stat{min-width:52px}
+.stat .n{font-family:var(--fm);font-size:14px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .l{font-size:9.5px;color:var(--dim);margin-top:2px}
+.stat.g .n{color:var(--me-hi)} .stat.f .n{color:#8fb36a} .stat.b .n{color:#d07070}
+
+/* 비용 표시 */
+.cost{display:flex;gap:12px;font-family:var(--fm);font-size:11.5px;color:var(--sub);
+  margin-top:10px;font-variant-numeric:tabular-nums;align-items:center}
+.cost b{color:var(--txt);font-weight:400}
+.cost .no{color:var(--bad)}
+
+/* 티어 스텝 */
+.tier{display:flex;gap:5px;margin-top:11px}
+.tier i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.08)}
+.tier i.on{background:linear-gradient(90deg,var(--me),var(--me-hi));box-shadow:0 0 8px rgba(217,164,65,.3)}
+.tier i.next{background:rgba(217,164,65,.28)}
+
+/* 게이지(업적·기한 등) */
+.pips{display:flex;gap:4px;margin-top:9px}
+.pips i{width:15px;height:15px;border-radius:4px;background:rgba(255,255,255,.07);
+  border:1px solid var(--line)}
+.pips i.on{background:rgba(217,164,65,.55);border-color:rgba(217,164,65,.7);
+  box-shadow:0 0 8px rgba(217,164,65,.3)}
+
+/* 경고 배너 */
+.warnbox{border:1px solid rgba(192,85,85,.45);background:rgba(192,85,85,.09);
+  border-radius:8px;padding:11px 14px;font-size:11.5px;color:#e0a0a0;line-height:1.65;margin-bottom:14px}
+.okbox{border:1px solid rgba(106,174,118,.4);background:rgba(106,174,118,.08);
+  border-radius:8px;padding:11px 14px;font-size:11.5px;color:#9ecfa8;line-height:1.65;margin-bottom:14px}
+
+/* 표 */
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;font-weight:400;color:var(--sub);font-size:10.5px;padding:7px 9px;
+  border-bottom:1px solid var(--line)}
+.tb td{padding:8px 9px;border-bottom:1px solid rgba(255,255,255,.045);
+  font-variant-numeric:tabular-nums}
+.tb td.n{font-family:var(--fm);letter-spacing:-.02em;text-align:right}
+.tb tr:hover td{background:rgba(255,255,255,.03)}
+.tb .me td{background:rgba(217,164,65,.07)}
+.tb .me td:first-child{color:var(--me-hi)}
+
+/* 인물 카드(로비) */
+.hero{padding:0;overflow:hidden}
+.heroav{height:104px;display:grid;place-items:center;font-family:var(--fd);font-size:34px;
+  border-bottom:1px solid var(--line)}
+.hero.c1 .heroav{background:linear-gradient(160deg,rgba(217,164,65,.22),rgba(217,164,65,.05));color:var(--me-hi)}
+.hero.c2 .heroav{background:linear-gradient(160deg,rgba(176,74,74,.24),rgba(176,74,74,.05));color:#e08a8a}
+.hero.c3 .heroav{background:linear-gradient(160deg,rgba(131,103,184,.26),rgba(131,103,184,.05));color:#b9a4e8}
+.herob{padding:14px 16px 16px}
+.rate{display:flex;gap:10px;margin-top:11px;font-family:var(--fm);font-size:11px}
+.rate span{flex:1;text-align:center;padding:6px 0;border-radius:5px;background:rgba(255,255,255,.045)}
+.rate span b{display:block;font-size:13px;font-weight:400;margin-top:2px;letter-spacing:-.02em}
+.rate .lo b{color:var(--ok)} .rate .hi b{color:var(--bad)}
+
+/* 체크리스트(온보딩) */
+.chk{display:flex;align-items:flex-start;gap:12px;padding:13px 0;
+  border-bottom:1px solid rgba(255,255,255,.05)}
+.chk .box{width:19px;height:19px;border-radius:5px;border:1px solid var(--line2);flex:none;
+  display:grid;place-items:center;font-size:11px;color:var(--dim);margin-top:1px}
+.chk.done .box{background:rgba(106,174,118,.22);border-color:rgba(106,174,118,.5);color:var(--ok)}
+.chk.now .box{border-color:rgba(217,164,65,.6);color:var(--me)}
+.chk .ct{font-size:12.5px}
+.chk.done .ct{color:var(--sub)}
+.chk .cd{font-size:10.5px;color:var(--dim);margin-top:4px;line-height:1.6}
+
+/* 부재 표시 */
+.absent{display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.absent .dot{width:7px;height:7px;border-radius:50%;flex:none}
+.absent .dot.ok{background:var(--ok)} .absent .dot.wait{background:var(--warn)}
+.absent .dot.off{background:var(--bad)}
+.absent .st{margin-left:auto;font-family:var(--fm);font-size:10.5px;color:var(--sub)}
+
+/* 최종 결과 */
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end;margin-bottom:26px}
+.pod{border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center;
+  background:rgba(255,255,255,.03)}
+.pod.w{border-color:rgba(217,164,65,.5);background:rgba(217,164,65,.09);padding-top:26px;padding-bottom:26px}
+.pod .r{font-family:var(--fm);font-size:10.5px;color:var(--dim)}
+.pod .nm{font-family:var(--fd);font-size:17px;margin-top:5px}
+.pod .sc{font-family:var(--fm);font-size:25px;letter-spacing:-.03em;margin-top:9px;
+  font-variant-numeric:tabular-nums}
+.pod.w .sc{color:var(--me-hi)}
+
+/* 설정 */
+.opt{display:flex;align-items:center;gap:12px;padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
+.opt .lbl{flex:1}
+.opt .sub2{font-size:10.5px;color:var(--dim);margin-top:3px}
+.sw{width:38px;height:21px;border-radius:11px;background:rgba(255,255,255,.09);
+  border:1px solid var(--line);position:relative;flex:none;cursor:pointer}
+.sw i{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;
+  background:var(--sub);transition:all .16s var(--ease)}
+.sw.on{background:rgba(217,164,65,.28);border-color:rgba(217,164,65,.5)}
+.sw.on i{left:20px;background:var(--me-hi)}
+
+/* 넓은 모달 */
+.modal.wide{width:min(940px,95vw)}
+
+/* 읽으라고 쓴 설명 — .mini(각주)보다 밝게 */
+.exp{font-size:11.5px;color:var(--sub);line-height:1.75}
+.exp b{color:var(--txt);font-weight:400}
+/* ══ HUD 정리 (2026-08-10) ══ */
+/* 우측 레일 — 라이벌 초상과 알림 아이콘을 한 기둥으로 */
+#riv{gap:7px}
+.rv{width:60px}
+.rvav{width:32px;height:32px}
+.rvn{font-size:9.5px;padding:0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rvr{top:4px;left:6px}
+#ntf{top:206px;gap:7px}
+.nt{width:60px;height:46px}
+.badge{background:var(--me);color:#14120c;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+#ntf::before{content:'';display:block;height:1px;background:var(--line);
+  margin:2px 8px 5px}
+
+/* 트래커 — 설명 줄은 접어 두고 호버 때만 편다 */
+#trk{width:238px}
+.tk .tks{max-height:0;opacity:0;margin-top:0;overflow:hidden;
+  transition:max-height .18s var(--ease),opacity .18s var(--ease),margin-top .18s var(--ease)}
+.tk:hover .tks,.tk:focus-visible .tks{max-height:52px;opacity:1;margin-top:7px}
+.tk{padding:11px 13px}
+
+/* 자원 바 — 산출 3종 / 정치 3종으로 가른다 */
+.yld+.yld::before{display:none}
+.yld.gsep::before{content:'';display:block;width:1px;height:16px;
+  background:var(--line2);margin-right:15px;margin-left:3px}
+.yld.pol{opacity:.94}
+</style></head>
+<body class="noteoff">
+
+<svg id="sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+<defs>
+ <symbol id="i-gold" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.4"/><path d="M12 7.6v8.8M9.4 10h5.2M9.4 14h5.2"/></symbol>
+ <symbol id="i-food" viewBox="0 0 24 24"><path d="M12 20V9.5"/><path d="M12 9.5c0-2.6 1.5-4.8 3.8-6-.3 2.8-1.6 4.9-3.8 6z"/><path d="M12 12.6c0-2.4-1.4-4.4-3.6-5.5.3 2.6 1.5 4.5 3.6 5.5z"/></symbol>
+ <symbol id="i-favor" viewBox="0 0 24 24"><path d="M12 19c-3.4-2.3-6.4-4.9-6.4-8A3.4 3.4 0 0 1 12 8.6a3.4 3.4 0 0 1 6.4 2.4c0 3.1-3 5.7-6.4 8z"/></symbol>
+ <symbol id="i-power" viewBox="0 0 24 24"><path d="M5 19h14M7 19V9m10 10V9M5.6 9h12.8L12 4.6 5.6 9z"/></symbol>
+ <symbol id="i-favorpt" viewBox="0 0 24 24"><path d="M12 4.8l2.1 4.6 4.9.5-3.7 3.4 1 4.9-4.3-2.5-4.3 2.5 1-4.9L5 9.9l4.9-.5z"/></symbol>
+ <symbol id="i-seat" viewBox="0 0 24 24"><path d="M4.5 13.5h15M6.5 13.5V19m11-5.5V19M6 10.2h12l-6-4.4-6 4.4z"/></symbol>
+ <symbol id="i-senate" viewBox="0 0 24 24"><path d="M4 19.2h16M6.4 19.2V10m4.2 9.2V10m2.8 9.2V10m4.2 9.2V10M4.6 10h14.8L12 4.6 4.6 10z"/></symbol>
+ <symbol id="i-scroll" viewBox="0 0 24 24"><path d="M7.4 4.8h9.2a1.8 1.8 0 0 1 1.8 1.8v10.8a2 2 0 0 1-2 2H7.6a2 2 0 0 1-2-2V6.6a1.8 1.8 0 0 1 1.8-1.8z"/><path d="M9 9h6M9 12.4h6M9 15.8h3.6"/></symbol>
+ <symbol id="i-war" viewBox="0 0 24 24"><path d="M5.2 5.2l9.4 9.4M18.8 5.2l-9.4 9.4"/><path d="M4.4 18.2l3-3M19.6 18.2l-3-3"/><path d="M13.4 16.4l2.4 2.4 2.6-.4.4-2.6-2.4-2.4M10.6 16.4l-2.4 2.4-2.6-.4-.4-2.6 2.4-2.4"/></symbol>
+ <symbol id="i-coinstack" viewBox="0 0 24 24"><ellipse cx="12" cy="7.4" rx="6.4" ry="2.6"/><path d="M5.6 7.4v4.4c0 1.4 2.9 2.6 6.4 2.6s6.4-1.2 6.4-2.6V7.4"/><path d="M5.6 11.8v4.4c0 1.4 2.9 2.6 6.4 2.6s6.4-1.2 6.4-2.6v-4.4"/></symbol>
+ <symbol id="i-skull" viewBox="0 0 24 24"><path d="M12 4.4c-4 0-6.8 2.7-6.8 6.2 0 2.2 1.1 3.6 2.2 4.5v2.6a1.6 1.6 0 0 0 1.6 1.6h6a1.6 1.6 0 0 0 1.6-1.6v-2.6c1.1-.9 2.2-2.3 2.2-4.5 0-3.5-2.8-6.2-6.8-6.2z"/><circle cx="9.6" cy="11" r="1.5"/><circle cx="14.4" cy="11" r="1.5"/></symbol>
+ <symbol id="i-boot" viewBox="0 0 24 24"><path d="M7.4 4.6h3.4v7.2c0 1.1.6 1.7 1.8 2.2l4.4 1.8a2 2 0 0 1 1.2 1.9v1.7H7.4z"/><path d="M7.4 15.6h4.6"/></symbol>
+ <symbol id="i-sword" viewBox="0 0 24 24"><path d="M18.6 4.6l-8.4 8.4M14.8 4.6h3.8v3.8"/><path d="M10.2 13l-2.4 2.4 2.8 2.8L13 15.8z"/><path d="M6.6 16.6l-2 2 2.8 2.8 2-2"/></symbol>
+ <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 4.4l6.6 2.4v5.4c0 3.4-2.6 6-6.6 7.4-4-1.4-6.6-4-6.6-7.4V6.8z"/></symbol>
+ <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4.6" y="4.6" width="6" height="6" rx="1"/><rect x="13.4" y="4.6" width="6" height="6" rx="1"/><rect x="4.6" y="13.4" width="6" height="6" rx="1"/><rect x="13.4" y="13.4" width="6" height="6" rx="1"/></symbol>
+ <symbol id="i-tent" viewBox="0 0 24 24"><path d="M12 4.8L4.4 19.2h15.2z"/><path d="M12 10.6l4.4 8.6M12 10.6l-4.4 8.6"/></symbol>
+ <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6.6 19.4V4.6"/><path d="M6.6 5.4h10.8l-2.4 3.6 2.4 3.6H6.6z"/></symbol>
+ <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M15.6 5.2a4.4 4.4 0 0 0-5.2 5.9L5 16.5a1.8 1.8 0 0 0 2.5 2.5l5.4-5.4a4.4 4.4 0 0 0 5.9-5.2l-2.5 2.5-2.6-.7-.7-2.6z"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.6 6.6l10.8 10.8M17.4 6.6L6.6 17.4"/></symbol>
+ <symbol id="i-crown" viewBox="0 0 24 24"><path d="M4.6 17.4h14.8M5 8l2.6 3.6L12 6l4.4 5.6L19 8l-1.2 8.2H6.2z"/></symbol>
+ <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 4.8v14.4M7.6 19.2h8.8"/><path d="M12 7.4L5.4 9.6m6.6-2.2l6.6 2.2"/><path d="M2.8 15c0 1.4 1.2 2.4 2.6 2.4S8 16.4 8 15L5.4 9.6zM16 15c0 1.4 1.2 2.4 2.6 2.4s2.6-1 2.6-2.4L18.6 9.6z"/></symbol>
+ <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+</defs></svg>
+
+<div id="map"><svg viewBox="0 0 920 540" preserveAspectRatio="xMidYMid meet"><defs><filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><radialGradient id="vig" cx="50%" cy="45%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".55"/></radialGradient></defs><polygon class="hex" points="91.6,111.7 76.8,137.3 47.2,137.3 32.4,111.7 47.2,86.1 76.8,86.1" fill="#1e2319"/><path d="M47.2,86.04757503463519 L76.8,86.04757503463519 L91.6,111.69357503463519 L76.8,109.69357503463519  L47.2,109.69357503463519 L32.4,111.69357503463519 Z" fill="#252b1f" opacity=".55"/><path d="M32.4,111.69357503463519 L47.2,137.3395750346352 L76.8,137.3395750346352 L91.6,111.69357503463519 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="91.6,165.4 76.8,191.0 47.2,191.0 32.4,165.4 47.2,139.8 76.8,139.8" fill="#1e2319"/><path d="M47.2,139.74115006927036 L76.8,139.74115006927036 L91.6,165.38715006927038 L76.8,163.38715006927038  L47.2,163.38715006927038 L32.4,165.38715006927038 Z" fill="#252b1f" opacity=".55"/><path d="M32.4,165.38715006927038 L47.2,191.0331500692704 L76.8,191.0331500692704 L91.6,165.38715006927038 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="91.6,219.1 76.8,244.7 47.2,244.7 32.4,219.1 47.2,193.4 76.8,193.4" fill="#1e2319"/><path d="M47.2,193.43472510390558 L76.8,193.43472510390558 L91.6,219.0807251039056 L76.8,217.0807251039056  L47.2,217.0807251039056 L32.4,219.0807251039056 Z" fill="#252b1f" opacity=".55"/><path d="M32.4,219.0807251039056 L47.2,244.7267251039056 L76.8,244.7267251039056 L91.6,219.0807251039056 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="91.6,272.8 76.8,298.4 47.2,298.4 32.4,272.8 47.2,247.1 76.8,247.1" fill="#1e2319"/><path d="M47.2,247.12830013854074 L76.8,247.12830013854074 L91.6,272.77430013854075 L76.8,270.77430013854075  L47.2,270.77430013854075 L32.4,272.77430013854075 Z" fill="#252b1f" opacity=".55"/><path d="M32.4,272.77430013854075 L47.2,298.42030013854077 L76.8,298.42030013854077 L91.6,272.77430013854075 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="91.6,326.5 76.8,352.1 47.2,352.1 32.4,326.5 47.2,300.8 76.8,300.8" fill="#1e2319"/><path d="M47.2,300.82187517317595 L76.8,300.82187517317595 L91.6,326.46787517317597 L76.8,324.46787517317597  L47.2,324.46787517317597 L32.4,326.46787517317597 Z" fill="#252b1f" opacity=".55"/><path d="M32.4,326.46787517317597 L47.2,352.113875173176 L76.8,352.113875173176 L91.6,326.46787517317597 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="138.1,84.8 123.3,110.5 93.7,110.5 78.9,84.8 93.7,59.2 123.3,59.2" fill="#1e2319"/><path d="M93.7,59.20078751731759 L123.3,59.20078751731759 L138.1,84.8467875173176 L123.3,82.8467875173176  L93.7,82.8467875173176 L78.9,84.8467875173176 Z" fill="#252b1f" opacity=".55"/><path d="M78.9,84.8467875173176 L93.7,110.4927875173176 L123.3,110.4927875173176 L138.1,84.8467875173176 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="138.1,138.5 123.3,164.2 93.7,164.2 78.9,138.5 93.7,112.9 123.3,112.9" fill="#1e2319"/><path d="M93.7,112.8943625519528 L123.3,112.8943625519528 L138.1,138.5403625519528 L123.3,136.5403625519528  L93.7,136.5403625519528 L78.9,138.5403625519528 Z" fill="#252b1f" opacity=".55"/><path d="M78.9,138.5403625519528 L93.7,164.1863625519528 L123.3,164.1863625519528 L138.1,138.5403625519528 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="138.1,192.2 123.3,217.9 93.7,217.9 78.9,192.2 93.7,166.6 123.3,166.6" fill="#182a1c"/><path d="M93.7,166.58793758658797 L123.3,166.58793758658797 L138.1,192.23393758658798 L123.3,190.23393758658798  L93.7,190.23393758658798 L78.9,192.23393758658798 Z" fill="#1f3423" opacity=".55"/><path d="M78.9,192.23393758658798 L93.7,217.879937586588 L123.3,217.879937586588 L138.1,192.23393758658798 Z" fill="#122015" opacity=".5"/><path d="M99.5,198.23393758658798 L95.5,191.23393758658798 L103.5,191.23393758658798 Z" fill="rgba(120,190,140,.20)"/><path d="M108.5,195.23393758658798 L104.5,188.23393758658798 L112.5,188.23393758658798 Z" fill="rgba(120,190,140,.20)"/><path d="M117.5,199.23393758658798 L113.5,192.23393758658798 L121.5,192.23393758658798 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="138.1,245.9 123.3,271.6 93.7,271.6 78.9,245.9 93.7,220.3 123.3,220.3" fill="#1e2319"/><path d="M93.7,220.2815126212232 L123.3,220.2815126212232 L138.1,245.9275126212232 L123.3,243.9275126212232  L93.7,243.9275126212232 L78.9,245.9275126212232 Z" fill="#252b1f" opacity=".55"/><path d="M78.9,245.9275126212232 L93.7,271.5735126212232 L123.3,271.5735126212232 L138.1,245.9275126212232 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="138.1,299.6 123.3,325.3 93.7,325.3 78.9,299.6 93.7,274.0 123.3,274.0" fill="#1e1e23"/><path d="M93.7,273.9750876558583 L123.3,273.9750876558583 L138.1,299.62108765585833 L123.3,297.62108765585833  L93.7,297.62108765585833 L78.9,299.62108765585833 Z" fill="#26262c" opacity=".55"/><path d="M78.9,299.62108765585833 L93.7,325.26708765585835 L123.3,325.26708765585835 L138.1,299.62108765585833 Z" fill="#16161a" opacity=".5"/><path d="M98.5,306.62108765585833 L105.5,293.62108765585833 L110.5,300.62108765585833 L114.5,291.62108765585833 L119.5,306.62108765585833 Z" fill="rgba(255,255,255,.09)" stroke="rgba(255,255,255,.18)" stroke-width="1"/><polygon class="hex" points="138.1,353.3 123.3,378.9 93.7,378.9 78.9,353.3 93.7,327.7 123.3,327.7" fill="#1e2319"/><path d="M93.7,327.66866269049353 L123.3,327.66866269049353 L138.1,353.31466269049355 L123.3,351.31466269049355  L93.7,351.31466269049355 L78.9,353.31466269049355 Z" fill="#252b1f" opacity=".55"/><path d="M78.9,353.31466269049355 L93.7,378.96066269049356 L123.3,378.96066269049356 L138.1,353.31466269049355 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="138.1,407.0 123.3,432.6 93.7,432.6 78.9,407.0 93.7,381.4 123.3,381.4" fill="#1e2319"/><path d="M93.7,381.36223772512875 L123.3,381.36223772512875 L138.1,407.00823772512877 L123.3,405.00823772512877  L93.7,405.00823772512877 L78.9,407.00823772512877 Z" fill="#252b1f" opacity=".55"/><path d="M78.9,407.00823772512877 L93.7,432.6542377251288 L123.3,432.6542377251288 L138.1,407.00823772512877 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="138.1,460.7 123.3,486.3 93.7,486.3 78.9,460.7 93.7,435.1 123.3,435.1" fill="#1e2319"/><path d="M93.7,435.0558127597639 L123.3,435.0558127597639 L138.1,460.7018127597639 L123.3,458.7018127597639  L93.7,458.7018127597639 L78.9,460.7018127597639 Z" fill="#252b1f" opacity=".55"/><path d="M78.9,460.7018127597639 L93.7,486.34781275976394 L123.3,486.34781275976394 L138.1,460.7018127597639 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="184.6,58.0 169.8,83.6 140.2,83.6 125.4,58.0 140.2,32.4 169.8,32.4" fill="#1e2319"/><path d="M140.2,32.354 L169.8,32.354 L184.6,58.0 L169.8,56.0  L140.2,56.0 L125.4,58.0 Z" fill="#252b1f" opacity=".55"/><path d="M125.4,58.0 L140.2,83.646 L169.8,83.646 L184.6,58.0 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="184.6,111.7 169.8,137.3 140.2,137.3 125.4,111.7 140.2,86.1 169.8,86.1" fill="#182a1c"/><path d="M140.2,86.04757503463519 L169.8,86.04757503463519 L184.6,111.69357503463519 L169.8,109.69357503463519  L140.2,109.69357503463519 L125.4,111.69357503463519 Z" fill="#1f3423" opacity=".55"/><path d="M125.4,111.69357503463519 L140.2,137.3395750346352 L169.8,137.3395750346352 L184.6,111.69357503463519 Z" fill="#122015" opacity=".5"/><path d="M146.0,117.69357503463519 L142.0,110.69357503463519 L150.0,110.69357503463519 Z" fill="rgba(120,190,140,.20)"/><path d="M155.0,114.69357503463519 L151.0,107.69357503463519 L159.0,107.69357503463519 Z" fill="rgba(120,190,140,.20)"/><path d="M164.0,118.69357503463519 L160.0,111.69357503463519 L168.0,111.69357503463519 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="184.6,165.4 169.8,191.0 140.2,191.0 125.4,165.4 140.2,139.8 169.8,139.8" fill="#182a1c"/><path d="M140.2,139.74115006927036 L169.8,139.74115006927036 L184.6,165.38715006927038 L169.8,163.38715006927038  L140.2,163.38715006927038 L125.4,165.38715006927038 Z" fill="#1f3423" opacity=".55"/><path d="M125.4,165.38715006927038 L140.2,191.0331500692704 L169.8,191.0331500692704 L184.6,165.38715006927038 Z" fill="#122015" opacity=".5"/><path d="M146.0,171.38715006927038 L142.0,164.38715006927038 L150.0,164.38715006927038 Z" fill="rgba(120,190,140,.20)"/><path d="M155.0,168.38715006927038 L151.0,161.38715006927038 L159.0,161.38715006927038 Z" fill="rgba(120,190,140,.20)"/><path d="M164.0,172.38715006927038 L160.0,165.38715006927038 L168.0,165.38715006927038 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="184.6,219.1 169.8,244.7 140.2,244.7 125.4,219.1 140.2,193.4 169.8,193.4" fill="#1e2319"/><path d="M140.2,193.43472510390558 L169.8,193.43472510390558 L184.6,219.0807251039056 L169.8,217.0807251039056  L140.2,217.0807251039056 L125.4,219.0807251039056 Z" fill="#252b1f" opacity=".55"/><path d="M125.4,219.0807251039056 L140.2,244.7267251039056 L169.8,244.7267251039056 L184.6,219.0807251039056 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="184.6,272.8 169.8,298.4 140.2,298.4 125.4,272.8 140.2,247.1 169.8,247.1" fill="#1e2319"/><path d="M140.2,247.12830013854074 L169.8,247.12830013854074 L184.6,272.77430013854075 L169.8,270.77430013854075  L140.2,270.77430013854075 L125.4,272.77430013854075 Z" fill="#252b1f" opacity=".55"/><path d="M125.4,272.77430013854075 L140.2,298.42030013854077 L169.8,298.42030013854077 L184.6,272.77430013854075 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="184.6,326.5 169.8,352.1 140.2,352.1 125.4,326.5 140.2,300.8 169.8,300.8" fill="#1e1e23"/><path d="M140.2,300.82187517317595 L169.8,300.82187517317595 L184.6,326.46787517317597 L169.8,324.46787517317597  L140.2,324.46787517317597 L125.4,326.46787517317597 Z" fill="#26262c" opacity=".55"/><path d="M125.4,326.46787517317597 L140.2,352.113875173176 L169.8,352.113875173176 L184.6,326.46787517317597 Z" fill="#16161a" opacity=".5"/><path d="M145.0,333.46787517317597 L152.0,320.46787517317597 L157.0,327.46787517317597 L161.0,318.46787517317597 L166.0,333.46787517317597 Z" fill="rgba(255,255,255,.09)" stroke="rgba(255,255,255,.18)" stroke-width="1"/><polygon class="hex" points="184.6,380.2 169.8,405.8 140.2,405.8 125.4,380.2 140.2,354.5 169.8,354.5" fill="#1e2319"/><path d="M140.2,354.51545020781117 L169.8,354.51545020781117 L184.6,380.1614502078112 L169.8,378.1614502078112  L140.2,378.1614502078112 L125.4,380.1614502078112 Z" fill="#252b1f" opacity=".55"/><path d="M125.4,380.1614502078112 L140.2,405.8074502078112 L169.8,405.8074502078112 L184.6,380.1614502078112 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="184.6,433.9 169.8,459.5 140.2,459.5 125.4,433.9 140.2,408.2 169.8,408.2" fill="#1e2319"/><path d="M140.2,408.20902524244633 L169.8,408.20902524244633 L184.6,433.85502524244635 L169.8,431.85502524244635  L140.2,431.85502524244635 L125.4,433.85502524244635 Z" fill="#252b1f" opacity=".55"/><path d="M125.4,433.85502524244635 L140.2,459.50102524244636 L169.8,459.50102524244636 L184.6,433.85502524244635 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="231.1,84.8 216.3,110.5 186.7,110.5 171.9,84.8 186.7,59.2 216.3,59.2" fill="#1e2319"/><path d="M186.7,59.20078751731759 L216.3,59.20078751731759 L231.1,84.8467875173176 L216.3,82.8467875173176  L186.7,82.8467875173176 L171.9,84.8467875173176 Z" fill="#252b1f" opacity=".55"/><path d="M171.9,84.8467875173176 L186.7,110.4927875173176 L216.3,110.4927875173176 L231.1,84.8467875173176 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="231.1,138.5 216.3,164.2 186.7,164.2 171.9,138.5 186.7,112.9 216.3,112.9" fill="#182a1c"/><path d="M186.7,112.8943625519528 L216.3,112.8943625519528 L231.1,138.5403625519528 L216.3,136.5403625519528  L186.7,136.5403625519528 L171.9,138.5403625519528 Z" fill="#1f3423" opacity=".55"/><path d="M171.9,138.5403625519528 L186.7,164.1863625519528 L216.3,164.1863625519528 L231.1,138.5403625519528 Z" fill="#122015" opacity=".5"/><path d="M192.5,144.5403625519528 L188.5,137.5403625519528 L196.5,137.5403625519528 Z" fill="rgba(120,190,140,.20)"/><path d="M201.5,141.5403625519528 L197.5,134.5403625519528 L205.5,134.5403625519528 Z" fill="rgba(120,190,140,.20)"/><path d="M210.5,145.5403625519528 L206.5,138.5403625519528 L214.5,138.5403625519528 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="231.1,192.2 216.3,217.9 186.7,217.9 171.9,192.2 186.7,166.6 216.3,166.6" fill="#1e2319"/><path d="M186.7,166.58793758658797 L216.3,166.58793758658797 L231.1,192.23393758658798 L216.3,190.23393758658798  L186.7,190.23393758658798 L171.9,192.23393758658798 Z" fill="#252b1f" opacity=".55"/><path d="M171.9,192.23393758658798 L186.7,217.879937586588 L216.3,217.879937586588 L231.1,192.23393758658798 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="231.1,245.9 216.3,271.6 186.7,271.6 171.9,245.9 186.7,220.3 216.3,220.3" fill="#1e2319"/><path d="M186.7,220.2815126212232 L216.3,220.2815126212232 L231.1,245.9275126212232 L216.3,243.9275126212232  L186.7,243.9275126212232 L171.9,245.9275126212232 Z" fill="#252b1f" opacity=".55"/><path d="M171.9,245.9275126212232 L186.7,271.5735126212232 L216.3,271.5735126212232 L231.1,245.9275126212232 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="231.1,299.6 216.3,325.3 186.7,325.3 171.9,299.6 186.7,274.0 216.3,274.0" fill="#1e2319"/><path d="M186.7,273.9750876558583 L216.3,273.9750876558583 L231.1,299.62108765585833 L216.3,297.62108765585833  L186.7,297.62108765585833 L171.9,299.62108765585833 Z" fill="#252b1f" opacity=".55"/><path d="M171.9,299.62108765585833 L186.7,325.26708765585835 L216.3,325.26708765585835 L231.1,299.62108765585833 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="231.1,353.3 216.3,378.9 186.7,378.9 171.9,353.3 186.7,327.7 216.3,327.7" fill="#1e2319"/><path d="M186.7,327.66866269049353 L216.3,327.66866269049353 L231.1,353.31466269049355 L216.3,351.31466269049355  L186.7,351.31466269049355 L171.9,353.31466269049355 Z" fill="#252b1f" opacity=".55"/><path d="M171.9,353.31466269049355 L186.7,378.96066269049356 L216.3,378.96066269049356 L231.1,353.31466269049355 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="231.1,407.0 216.3,432.6 186.7,432.6 171.9,407.0 186.7,381.4 216.3,381.4" fill="#182a1c"/><path d="M186.7,381.36223772512875 L216.3,381.36223772512875 L231.1,407.00823772512877 L216.3,405.00823772512877  L186.7,405.00823772512877 L171.9,407.00823772512877 Z" fill="#1f3423" opacity=".55"/><path d="M171.9,407.00823772512877 L186.7,432.6542377251288 L216.3,432.6542377251288 L231.1,407.00823772512877 Z" fill="#122015" opacity=".5"/><path d="M192.5,413.00823772512877 L188.5,406.00823772512877 L196.5,406.00823772512877 Z" fill="rgba(120,190,140,.20)"/><path d="M201.5,410.00823772512877 L197.5,403.00823772512877 L205.5,403.00823772512877 Z" fill="rgba(120,190,140,.20)"/><path d="M210.5,414.00823772512877 L206.5,407.00823772512877 L214.5,407.00823772512877 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="231.1,460.7 216.3,486.3 186.7,486.3 171.9,460.7 186.7,435.1 216.3,435.1" fill="#1e2319"/><path d="M186.7,435.0558127597639 L216.3,435.0558127597639 L231.1,460.7018127597639 L216.3,458.7018127597639  L186.7,458.7018127597639 L171.9,460.7018127597639 Z" fill="#252b1f" opacity=".55"/><path d="M171.9,460.7018127597639 L186.7,486.34781275976394 L216.3,486.34781275976394 L231.1,460.7018127597639 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="277.6,58.0 262.8,83.6 233.2,83.6 218.4,58.0 233.2,32.4 262.8,32.4" fill="#1e2319"/><path d="M233.2,32.354 L262.8,32.354 L277.6,58.0 L262.8,56.0  L233.2,56.0 L218.4,58.0 Z" fill="#252b1f" opacity=".55"/><path d="M218.4,58.0 L233.2,83.646 L262.8,83.646 L277.6,58.0 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="277.6,111.7 262.8,137.3 233.2,137.3 218.4,111.7 233.2,86.1 262.8,86.1" fill="#1e2319"/><path d="M233.2,86.04757503463519 L262.8,86.04757503463519 L277.6,111.69357503463519 L262.8,109.69357503463519  L233.2,109.69357503463519 L218.4,111.69357503463519 Z" fill="#252b1f" opacity=".55"/><path d="M218.4,111.69357503463519 L233.2,137.3395750346352 L262.8,137.3395750346352 L277.6,111.69357503463519 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="277.6,165.4 262.8,191.0 233.2,191.0 218.4,165.4 233.2,139.8 262.8,139.8" fill="#1e2319"/><path d="M233.2,139.74115006927036 L262.8,139.74115006927036 L277.6,165.38715006927038 L262.8,163.38715006927038  L233.2,163.38715006927038 L218.4,165.38715006927038 Z" fill="#252b1f" opacity=".55"/><path d="M218.4,165.38715006927038 L233.2,191.0331500692704 L262.8,191.0331500692704 L277.6,165.38715006927038 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="277.6,219.1 262.8,244.7 233.2,244.7 218.4,219.1 233.2,193.4 262.8,193.4" fill="#1e2319"/><path d="M233.2,193.43472510390558 L262.8,193.43472510390558 L277.6,219.0807251039056 L262.8,217.0807251039056  L233.2,217.0807251039056 L218.4,219.0807251039056 Z" fill="#252b1f" opacity=".55"/><path d="M218.4,219.0807251039056 L233.2,244.7267251039056 L262.8,244.7267251039056 L277.6,219.0807251039056 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="277.6,272.8 262.8,298.4 233.2,298.4 218.4,272.8 233.2,247.1 262.8,247.1" fill="#2c2719"/><path d="M233.2,247.12830013854074 L262.8,247.12830013854074 L277.6,272.77430013854075 L262.8,270.77430013854075  L233.2,270.77430013854075 L218.4,272.77430013854075 Z" fill="#372f1e" opacity=".55"/><path d="M218.4,272.77430013854075 L233.2,298.42030013854077 L262.8,298.42030013854077 L277.6,272.77430013854075 Z" fill="#221e13" opacity=".5"/><path d="M237.0,278.77430013854075 Q244.0,267.77430013854075 250.0,275.77430013854075 Q255.0,269.77430013854075 260.0,278.77430013854075" fill="none" stroke="rgba(220,190,110,.22)" stroke-width="1.4"/><polygon class="hex" points="277.6,326.5 262.8,352.1 233.2,352.1 218.4,326.5 233.2,300.8 262.8,300.8" fill="#1e2319"/><path d="M233.2,300.82187517317595 L262.8,300.82187517317595 L277.6,326.46787517317597 L262.8,324.46787517317597  L233.2,324.46787517317597 L218.4,326.46787517317597 Z" fill="#252b1f" opacity=".55"/><path d="M218.4,326.46787517317597 L233.2,352.113875173176 L262.8,352.113875173176 L277.6,326.46787517317597 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="277.6,380.2 262.8,405.8 233.2,405.8 218.4,380.2 233.2,354.5 262.8,354.5" fill="#182a1c"/><path d="M233.2,354.51545020781117 L262.8,354.51545020781117 L277.6,380.1614502078112 L262.8,378.1614502078112  L233.2,378.1614502078112 L218.4,380.1614502078112 Z" fill="#1f3423" opacity=".55"/><path d="M218.4,380.1614502078112 L233.2,405.8074502078112 L262.8,405.8074502078112 L277.6,380.1614502078112 Z" fill="#122015" opacity=".5"/><path d="M239.0,386.1614502078112 L235.0,379.1614502078112 L243.0,379.1614502078112 Z" fill="rgba(120,190,140,.20)"/><path d="M248.0,383.1614502078112 L244.0,376.1614502078112 L252.0,376.1614502078112 Z" fill="rgba(120,190,140,.20)"/><path d="M257.0,387.1614502078112 L253.0,380.1614502078112 L261.0,380.1614502078112 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="277.6,433.9 262.8,459.5 233.2,459.5 218.4,433.9 233.2,408.2 262.8,408.2" fill="#1e2319"/><path d="M233.2,408.20902524244633 L262.8,408.20902524244633 L277.6,433.85502524244635 L262.8,431.85502524244635  L233.2,431.85502524244635 L218.4,433.85502524244635 Z" fill="#252b1f" opacity=".55"/><path d="M218.4,433.85502524244635 L233.2,459.50102524244636 L262.8,459.50102524244636 L277.6,433.85502524244635 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="324.1,84.8 309.3,110.5 279.7,110.5 264.9,84.8 279.7,59.2 309.3,59.2" fill="#1e2319"/><path d="M279.7,59.20078751731759 L309.3,59.20078751731759 L324.1,84.8467875173176 L309.3,82.8467875173176  L279.7,82.8467875173176 L264.9,84.8467875173176 Z" fill="#252b1f" opacity=".55"/><path d="M264.9,84.8467875173176 L279.7,110.4927875173176 L309.3,110.4927875173176 L324.1,84.8467875173176 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="324.1,138.5 309.3,164.2 279.7,164.2 264.9,138.5 279.7,112.9 309.3,112.9" fill="#1e2319"/><path d="M279.7,112.8943625519528 L309.3,112.8943625519528 L324.1,138.5403625519528 L309.3,136.5403625519528  L279.7,136.5403625519528 L264.9,138.5403625519528 Z" fill="#252b1f" opacity=".55"/><path d="M264.9,138.5403625519528 L279.7,164.1863625519528 L309.3,164.1863625519528 L324.1,138.5403625519528 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="324.1,192.2 309.3,217.9 279.7,217.9 264.9,192.2 279.7,166.6 309.3,166.6" fill="#2c2719"/><path d="M279.7,166.58793758658797 L309.3,166.58793758658797 L324.1,192.23393758658798 L309.3,190.23393758658798  L279.7,190.23393758658798 L264.9,192.23393758658798 Z" fill="#372f1e" opacity=".55"/><path d="M264.9,192.23393758658798 L279.7,217.879937586588 L309.3,217.879937586588 L324.1,192.23393758658798 Z" fill="#221e13" opacity=".5"/><path d="M283.5,198.23393758658798 Q290.5,187.23393758658798 296.5,195.23393758658798 Q301.5,189.23393758658798 306.5,198.23393758658798" fill="none" stroke="rgba(220,190,110,.22)" stroke-width="1.4"/><polygon class="hex" points="324.1,245.9 309.3,271.6 279.7,271.6 264.9,245.9 279.7,220.3 309.3,220.3" fill="#2c2719"/><path d="M279.7,220.2815126212232 L309.3,220.2815126212232 L324.1,245.9275126212232 L309.3,243.9275126212232  L279.7,243.9275126212232 L264.9,245.9275126212232 Z" fill="#372f1e" opacity=".55"/><path d="M264.9,245.9275126212232 L279.7,271.5735126212232 L309.3,271.5735126212232 L324.1,245.9275126212232 Z" fill="#221e13" opacity=".5"/><path d="M283.5,251.9275126212232 Q290.5,240.9275126212232 296.5,248.9275126212232 Q301.5,242.9275126212232 306.5,251.9275126212232" fill="none" stroke="rgba(220,190,110,.22)" stroke-width="1.4"/><polygon class="hex" points="324.1,299.6 309.3,325.3 279.7,325.3 264.9,299.6 279.7,274.0 309.3,274.0" fill="#1e2319"/><path d="M279.7,273.9750876558583 L309.3,273.9750876558583 L324.1,299.62108765585833 L309.3,297.62108765585833  L279.7,297.62108765585833 L264.9,299.62108765585833 Z" fill="#252b1f" opacity=".55"/><path d="M264.9,299.62108765585833 L279.7,325.26708765585835 L309.3,325.26708765585835 L324.1,299.62108765585833 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="324.1,353.3 309.3,378.9 279.7,378.9 264.9,353.3 279.7,327.7 309.3,327.7" fill="#1e2319"/><path d="M279.7,327.66866269049353 L309.3,327.66866269049353 L324.1,353.31466269049355 L309.3,351.31466269049355  L279.7,351.31466269049355 L264.9,353.31466269049355 Z" fill="#252b1f" opacity=".55"/><path d="M264.9,353.31466269049355 L279.7,378.96066269049356 L309.3,378.96066269049356 L324.1,353.31466269049355 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="324.1,407.0 309.3,432.6 279.7,432.6 264.9,407.0 279.7,381.4 309.3,381.4" fill="#1e2319"/><path d="M279.7,381.36223772512875 L309.3,381.36223772512875 L324.1,407.00823772512877 L309.3,405.00823772512877  L279.7,405.00823772512877 L264.9,407.00823772512877 Z" fill="#252b1f" opacity=".55"/><path d="M264.9,407.00823772512877 L279.7,432.6542377251288 L309.3,432.6542377251288 L324.1,407.00823772512877 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="324.1,460.7 309.3,486.3 279.7,486.3 264.9,460.7 279.7,435.1 309.3,435.1" fill="#1e2319"/><path d="M279.7,435.0558127597639 L309.3,435.0558127597639 L324.1,460.7018127597639 L309.3,458.7018127597639  L279.7,458.7018127597639 L264.9,460.7018127597639 Z" fill="#252b1f" opacity=".55"/><path d="M264.9,460.7018127597639 L279.7,486.34781275976394 L309.3,486.34781275976394 L324.1,460.7018127597639 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="370.6,58.0 355.8,83.6 326.2,83.6 311.4,58.0 326.2,32.4 355.8,32.4" fill="#1e1e23"/><path d="M326.2,32.354 L355.8,32.354 L370.6,58.0 L355.8,56.0  L326.2,56.0 L311.4,58.0 Z" fill="#26262c" opacity=".55"/><path d="M311.4,58.0 L326.2,83.646 L355.8,83.646 L370.6,58.0 Z" fill="#16161a" opacity=".5"/><path d="M331.0,65.0 L338.0,52.0 L343.0,59.0 L347.0,50.0 L352.0,65.0 Z" fill="rgba(255,255,255,.09)" stroke="rgba(255,255,255,.18)" stroke-width="1"/><polygon class="hex" points="370.6,111.7 355.8,137.3 326.2,137.3 311.4,111.7 326.2,86.1 355.8,86.1" fill="#1e2319"/><path d="M326.2,86.04757503463519 L355.8,86.04757503463519 L370.6,111.69357503463519 L355.8,109.69357503463519  L326.2,109.69357503463519 L311.4,111.69357503463519 Z" fill="#252b1f" opacity=".55"/><path d="M311.4,111.69357503463519 L326.2,137.3395750346352 L355.8,137.3395750346352 L370.6,111.69357503463519 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="370.6,165.4 355.8,191.0 326.2,191.0 311.4,165.4 326.2,139.8 355.8,139.8" fill="#2c2719"/><path d="M326.2,139.74115006927036 L355.8,139.74115006927036 L370.6,165.38715006927038 L355.8,163.38715006927038  L326.2,163.38715006927038 L311.4,165.38715006927038 Z" fill="#372f1e" opacity=".55"/><path d="M311.4,165.38715006927038 L326.2,191.0331500692704 L355.8,191.0331500692704 L370.6,165.38715006927038 Z" fill="#221e13" opacity=".5"/><path d="M330.0,171.38715006927038 Q337.0,160.38715006927038 343.0,168.38715006927038 Q348.0,162.38715006927038 353.0,171.38715006927038" fill="none" stroke="rgba(220,190,110,.22)" stroke-width="1.4"/><polygon class="hex" points="370.6,219.1 355.8,244.7 326.2,244.7 311.4,219.1 326.2,193.4 355.8,193.4" fill="#1e2319"/><path d="M326.2,193.43472510390558 L355.8,193.43472510390558 L370.6,219.0807251039056 L355.8,217.0807251039056  L326.2,217.0807251039056 L311.4,219.0807251039056 Z" fill="#252b1f" opacity=".55"/><path d="M311.4,219.0807251039056 L326.2,244.7267251039056 L355.8,244.7267251039056 L370.6,219.0807251039056 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="370.6,272.8 355.8,298.4 326.2,298.4 311.4,272.8 326.2,247.1 355.8,247.1" fill="#1e2319"/><path d="M326.2,247.12830013854074 L355.8,247.12830013854074 L370.6,272.77430013854075 L355.8,270.77430013854075  L326.2,270.77430013854075 L311.4,272.77430013854075 Z" fill="#252b1f" opacity=".55"/><path d="M311.4,272.77430013854075 L326.2,298.42030013854077 L355.8,298.42030013854077 L370.6,272.77430013854075 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="370.6,326.5 355.8,352.1 326.2,352.1 311.4,326.5 326.2,300.8 355.8,300.8" fill="#16232e"/><path d="M326.2,300.82187517317595 L355.8,300.82187517317595 L370.6,326.46787517317597 L355.8,324.46787517317597  L326.2,324.46787517317597 L311.4,326.46787517317597 Z" fill="#1c2c3a" opacity=".55"/><path d="M311.4,326.46787517317597 L326.2,352.113875173176 L355.8,352.113875173176 L370.6,326.46787517317597 Z" fill="#101a23" opacity=".5"/><path d="M329.0,323.46787517317597 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><path d="M329.0,329.46787517317597 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><polygon class="hex" points="370.6,380.2 355.8,405.8 326.2,405.8 311.4,380.2 326.2,354.5 355.8,354.5" fill="#1e2319"/><path d="M326.2,354.51545020781117 L355.8,354.51545020781117 L370.6,380.1614502078112 L355.8,378.1614502078112  L326.2,378.1614502078112 L311.4,380.1614502078112 Z" fill="#252b1f" opacity=".55"/><path d="M311.4,380.1614502078112 L326.2,405.8074502078112 L355.8,405.8074502078112 L370.6,380.1614502078112 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="370.6,433.9 355.8,459.5 326.2,459.5 311.4,433.9 326.2,408.2 355.8,408.2" fill="#1e2319"/><path d="M326.2,408.20902524244633 L355.8,408.20902524244633 L370.6,433.85502524244635 L355.8,431.85502524244635  L326.2,431.85502524244635 L311.4,433.85502524244635 Z" fill="#252b1f" opacity=".55"/><path d="M311.4,433.85502524244635 L326.2,459.50102524244636 L355.8,459.50102524244636 L370.6,433.85502524244635 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="417.1,84.8 402.3,110.5 372.7,110.5 357.9,84.8 372.7,59.2 402.3,59.2" fill="#1e2319"/><path d="M372.7,59.20078751731759 L402.3,59.20078751731759 L417.1,84.8467875173176 L402.3,82.8467875173176  L372.7,82.8467875173176 L357.9,84.8467875173176 Z" fill="#252b1f" opacity=".55"/><path d="M357.9,84.8467875173176 L372.7,110.4927875173176 L402.3,110.4927875173176 L417.1,84.8467875173176 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="417.1,138.5 402.3,164.2 372.7,164.2 357.9,138.5 372.7,112.9 402.3,112.9" fill="#1e2319"/><path d="M372.7,112.8943625519528 L402.3,112.8943625519528 L417.1,138.5403625519528 L402.3,136.5403625519528  L372.7,136.5403625519528 L357.9,138.5403625519528 Z" fill="#252b1f" opacity=".55"/><path d="M357.9,138.5403625519528 L372.7,164.1863625519528 L402.3,164.1863625519528 L417.1,138.5403625519528 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="417.1,192.2 402.3,217.9 372.7,217.9 357.9,192.2 372.7,166.6 402.3,166.6" fill="#1e2319"/><path d="M372.7,166.58793758658797 L402.3,166.58793758658797 L417.1,192.23393758658798 L402.3,190.23393758658798  L372.7,190.23393758658798 L357.9,192.23393758658798 Z" fill="#252b1f" opacity=".55"/><path d="M357.9,192.23393758658798 L372.7,217.879937586588 L402.3,217.879937586588 L417.1,192.23393758658798 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="417.1,245.9 402.3,271.6 372.7,271.6 357.9,245.9 372.7,220.3 402.3,220.3" fill="#1e2319"/><path d="M372.7,220.2815126212232 L402.3,220.2815126212232 L417.1,245.9275126212232 L402.3,243.9275126212232  L372.7,243.9275126212232 L357.9,245.9275126212232 Z" fill="#252b1f" opacity=".55"/><path d="M357.9,245.9275126212232 L372.7,271.5735126212232 L402.3,271.5735126212232 L417.1,245.9275126212232 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="417.1,299.6 402.3,325.3 372.7,325.3 357.9,299.6 372.7,274.0 402.3,274.0" fill="#1e2319"/><path d="M372.7,273.9750876558583 L402.3,273.9750876558583 L417.1,299.62108765585833 L402.3,297.62108765585833  L372.7,297.62108765585833 L357.9,299.62108765585833 Z" fill="#252b1f" opacity=".55"/><path d="M357.9,299.62108765585833 L372.7,325.26708765585835 L402.3,325.26708765585835 L417.1,299.62108765585833 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="417.1,353.3 402.3,378.9 372.7,378.9 357.9,353.3 372.7,327.7 402.3,327.7" fill="#16232e"/><path d="M372.7,327.66866269049353 L402.3,327.66866269049353 L417.1,353.31466269049355 L402.3,351.31466269049355  L372.7,351.31466269049355 L357.9,353.31466269049355 Z" fill="#1c2c3a" opacity=".55"/><path d="M357.9,353.31466269049355 L372.7,378.96066269049356 L402.3,378.96066269049356 L417.1,353.31466269049355 Z" fill="#101a23" opacity=".5"/><path d="M375.5,350.31466269049355 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><path d="M375.5,356.31466269049355 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><polygon class="hex" points="417.1,407.0 402.3,432.6 372.7,432.6 357.9,407.0 372.7,381.4 402.3,381.4" fill="#16232e"/><path d="M372.7,381.36223772512875 L402.3,381.36223772512875 L417.1,407.00823772512877 L402.3,405.00823772512877  L372.7,405.00823772512877 L357.9,407.00823772512877 Z" fill="#1c2c3a" opacity=".55"/><path d="M357.9,407.00823772512877 L372.7,432.6542377251288 L402.3,432.6542377251288 L417.1,407.00823772512877 Z" fill="#101a23" opacity=".5"/><path d="M375.5,404.00823772512877 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><path d="M375.5,410.00823772512877 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><polygon class="hex" points="417.1,460.7 402.3,486.3 372.7,486.3 357.9,460.7 372.7,435.1 402.3,435.1" fill="#1e2319"/><path d="M372.7,435.0558127597639 L402.3,435.0558127597639 L417.1,460.7018127597639 L402.3,458.7018127597639  L372.7,458.7018127597639 L357.9,460.7018127597639 Z" fill="#252b1f" opacity=".55"/><path d="M357.9,460.7018127597639 L372.7,486.34781275976394 L402.3,486.34781275976394 L417.1,460.7018127597639 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="463.6,58.0 448.8,83.6 419.2,83.6 404.4,58.0 419.2,32.4 448.8,32.4" fill="#1e2319"/><path d="M419.2,32.354 L448.8,32.354 L463.6,58.0 L448.8,56.0  L419.2,56.0 L404.4,58.0 Z" fill="#252b1f" opacity=".55"/><path d="M404.4,58.0 L419.2,83.646 L448.8,83.646 L463.6,58.0 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="463.6,111.7 448.8,137.3 419.2,137.3 404.4,111.7 419.2,86.1 448.8,86.1" fill="#182a1c"/><path d="M419.2,86.04757503463519 L448.8,86.04757503463519 L463.6,111.69357503463519 L448.8,109.69357503463519  L419.2,109.69357503463519 L404.4,111.69357503463519 Z" fill="#1f3423" opacity=".55"/><path d="M404.4,111.69357503463519 L419.2,137.3395750346352 L448.8,137.3395750346352 L463.6,111.69357503463519 Z" fill="#122015" opacity=".5"/><path d="M425.0,117.69357503463519 L421.0,110.69357503463519 L429.0,110.69357503463519 Z" fill="rgba(120,190,140,.20)"/><path d="M434.0,114.69357503463519 L430.0,107.69357503463519 L438.0,107.69357503463519 Z" fill="rgba(120,190,140,.20)"/><path d="M443.0,118.69357503463519 L439.0,111.69357503463519 L447.0,111.69357503463519 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="463.6,165.4 448.8,191.0 419.2,191.0 404.4,165.4 419.2,139.8 448.8,139.8" fill="#1e2319"/><path d="M419.2,139.74115006927036 L448.8,139.74115006927036 L463.6,165.38715006927038 L448.8,163.38715006927038  L419.2,163.38715006927038 L404.4,165.38715006927038 Z" fill="#252b1f" opacity=".55"/><path d="M404.4,165.38715006927038 L419.2,191.0331500692704 L448.8,191.0331500692704 L463.6,165.38715006927038 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="463.6,219.1 448.8,244.7 419.2,244.7 404.4,219.1 419.2,193.4 448.8,193.4" fill="#1e2319"/><path d="M419.2,193.43472510390558 L448.8,193.43472510390558 L463.6,219.0807251039056 L448.8,217.0807251039056  L419.2,217.0807251039056 L404.4,219.0807251039056 Z" fill="#252b1f" opacity=".55"/><path d="M404.4,219.0807251039056 L419.2,244.7267251039056 L448.8,244.7267251039056 L463.6,219.0807251039056 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="463.6,272.8 448.8,298.4 419.2,298.4 404.4,272.8 419.2,247.1 448.8,247.1" fill="#1e2319"/><path d="M419.2,247.12830013854074 L448.8,247.12830013854074 L463.6,272.77430013854075 L448.8,270.77430013854075  L419.2,270.77430013854075 L404.4,272.77430013854075 Z" fill="#252b1f" opacity=".55"/><path d="M404.4,272.77430013854075 L419.2,298.42030013854077 L448.8,298.42030013854077 L463.6,272.77430013854075 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="463.6,326.5 448.8,352.1 419.2,352.1 404.4,326.5 419.2,300.8 448.8,300.8" fill="#1e2319"/><path d="M419.2,300.82187517317595 L448.8,300.82187517317595 L463.6,326.46787517317597 L448.8,324.46787517317597  L419.2,324.46787517317597 L404.4,326.46787517317597 Z" fill="#252b1f" opacity=".55"/><path d="M404.4,326.46787517317597 L419.2,352.113875173176 L448.8,352.113875173176 L463.6,326.46787517317597 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="463.6,380.2 448.8,405.8 419.2,405.8 404.4,380.2 419.2,354.5 448.8,354.5" fill="#16232e"/><path d="M419.2,354.51545020781117 L448.8,354.51545020781117 L463.6,380.1614502078112 L448.8,378.1614502078112  L419.2,378.1614502078112 L404.4,380.1614502078112 Z" fill="#1c2c3a" opacity=".55"/><path d="M404.4,380.1614502078112 L419.2,405.8074502078112 L448.8,405.8074502078112 L463.6,380.1614502078112 Z" fill="#101a23" opacity=".5"/><path d="M422.0,377.1614502078112 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><path d="M422.0,383.1614502078112 q6,-3.5 12,0 t12,0" fill="none" stroke="rgba(110,175,215,.28)" stroke-width="1.2"/><polygon class="hex" points="463.6,433.9 448.8,459.5 419.2,459.5 404.4,433.9 419.2,408.2 448.8,408.2" fill="#1e2319"/><path d="M419.2,408.20902524244633 L448.8,408.20902524244633 L463.6,433.85502524244635 L448.8,431.85502524244635  L419.2,431.85502524244635 L404.4,433.85502524244635 Z" fill="#252b1f" opacity=".55"/><path d="M404.4,433.85502524244635 L419.2,459.50102524244636 L448.8,459.50102524244636 L463.6,433.85502524244635 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="510.1,84.8 495.3,110.5 465.7,110.5 450.9,84.8 465.7,59.2 495.3,59.2" fill="#1e2319"/><path d="M465.7,59.20078751731759 L495.3,59.20078751731759 L510.1,84.8467875173176 L495.3,82.8467875173176  L465.7,82.8467875173176 L450.9,84.8467875173176 Z" fill="#252b1f" opacity=".55"/><path d="M450.9,84.8467875173176 L465.7,110.4927875173176 L495.3,110.4927875173176 L510.1,84.8467875173176 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="510.1,138.5 495.3,164.2 465.7,164.2 450.9,138.5 465.7,112.9 495.3,112.9" fill="#1e2319"/><path d="M465.7,112.8943625519528 L495.3,112.8943625519528 L510.1,138.5403625519528 L495.3,136.5403625519528  L465.7,136.5403625519528 L450.9,138.5403625519528 Z" fill="#252b1f" opacity=".55"/><path d="M450.9,138.5403625519528 L465.7,164.1863625519528 L495.3,164.1863625519528 L510.1,138.5403625519528 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="510.1,192.2 495.3,217.9 465.7,217.9 450.9,192.2 465.7,166.6 495.3,166.6" fill="#182a1c"/><path d="M465.7,166.58793758658797 L495.3,166.58793758658797 L510.1,192.23393758658798 L495.3,190.23393758658798  L465.7,190.23393758658798 L450.9,192.23393758658798 Z" fill="#1f3423" opacity=".55"/><path d="M450.9,192.23393758658798 L465.7,217.879937586588 L495.3,217.879937586588 L510.1,192.23393758658798 Z" fill="#122015" opacity=".5"/><path d="M471.5,198.23393758658798 L467.5,191.23393758658798 L475.5,191.23393758658798 Z" fill="rgba(120,190,140,.20)"/><path d="M480.5,195.23393758658798 L476.5,188.23393758658798 L484.5,188.23393758658798 Z" fill="rgba(120,190,140,.20)"/><path d="M489.5,199.23393758658798 L485.5,192.23393758658798 L493.5,192.23393758658798 Z" fill="rgba(120,190,140,.20)"/><polygon class="hex" points="510.1,245.9 495.3,271.6 465.7,271.6 450.9,245.9 465.7,220.3 495.3,220.3" fill="#1e2319"/><path d="M465.7,220.2815126212232 L495.3,220.2815126212232 L510.1,245.9275126212232 L495.3,243.9275126212232  L465.7,243.9275126212232 L450.9,245.9275126212232 Z" fill="#252b1f" opacity=".55"/><path d="M450.9,245.9275126212232 L465.7,271.5735126212232 L495.3,271.5735126212232 L510.1,245.9275126212232 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="510.1,299.6 495.3,325.3 465.7,325.3 450.9,299.6 465.7,274.0 495.3,274.0" fill="#2c2719"/><path d="M465.7,273.9750876558583 L495.3,273.9750876558583 L510.1,299.62108765585833 L495.3,297.62108765585833  L465.7,297.62108765585833 L450.9,299.62108765585833 Z" fill="#372f1e" opacity=".55"/><path d="M450.9,299.62108765585833 L465.7,325.26708765585835 L495.3,325.26708765585835 L510.1,299.62108765585833 Z" fill="#221e13" opacity=".5"/><path d="M469.5,305.62108765585833 Q476.5,294.62108765585833 482.5,302.62108765585833 Q487.5,296.62108765585833 492.5,305.62108765585833" fill="none" stroke="rgba(220,190,110,.22)" stroke-width="1.4"/><polygon class="hex" points="510.1,353.3 495.3,378.9 465.7,378.9 450.9,353.3 465.7,327.7 495.3,327.7" fill="#1e2319"/><path d="M465.7,327.66866269049353 L495.3,327.66866269049353 L510.1,353.31466269049355 L495.3,351.31466269049355  L465.7,351.31466269049355 L450.9,353.31466269049355 Z" fill="#252b1f" opacity=".55"/><path d="M450.9,353.31466269049355 L465.7,378.96066269049356 L495.3,378.96066269049356 L510.1,353.31466269049355 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="510.1,407.0 495.3,432.6 465.7,432.6 450.9,407.0 465.7,381.4 495.3,381.4" fill="#1e2319"/><path d="M465.7,381.36223772512875 L495.3,381.36223772512875 L510.1,407.00823772512877 L495.3,405.00823772512877  L465.7,405.00823772512877 L450.9,407.00823772512877 Z" fill="#252b1f" opacity=".55"/><path d="M450.9,407.00823772512877 L465.7,432.6542377251288 L495.3,432.6542377251288 L510.1,407.00823772512877 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="510.1,460.7 495.3,486.3 465.7,486.3 450.9,460.7 465.7,435.1 495.3,435.1" fill="#1e2319"/><path d="M465.7,435.0558127597639 L495.3,435.0558127597639 L510.1,460.7018127597639 L495.3,458.7018127597639  L465.7,458.7018127597639 L450.9,460.7018127597639 Z" fill="#252b1f" opacity=".55"/><path d="M450.9,460.7018127597639 L465.7,486.34781275976394 L495.3,486.34781275976394 L510.1,460.7018127597639 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="556.6,58.0 541.8,83.6 512.2,83.6 497.4,58.0 512.2,32.4 541.8,32.4" fill="#1e2319"/><path d="M512.2,32.354 L541.8,32.354 L556.6,58.0 L541.8,56.0  L512.2,56.0 L497.4,58.0 Z" fill="#252b1f" opacity=".55"/><path d="M497.4,58.0 L512.2,83.646 L541.8,83.646 L556.6,58.0 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="556.6,111.7 541.8,137.3 512.2,137.3 497.4,111.7 512.2,86.1 541.8,86.1" fill="#1e1e23"/><path d="M512.2,86.04757503463519 L541.8,86.04757503463519 L556.6,111.69357503463519 L541.8,109.69357503463519  L512.2,109.69357503463519 L497.4,111.69357503463519 Z" fill="#26262c" opacity=".55"/><path d="M497.4,111.69357503463519 L512.2,137.3395750346352 L541.8,137.3395750346352 L556.6,111.69357503463519 Z" fill="#16161a" opacity=".5"/><path d="M517.0,118.69357503463519 L524.0,105.69357503463519 L529.0,112.69357503463519 L533.0,103.69357503463519 L538.0,118.69357503463519 Z" fill="rgba(255,255,255,.09)" stroke="rgba(255,255,255,.18)" stroke-width="1"/><polygon class="hex" points="556.6,165.4 541.8,191.0 512.2,191.0 497.4,165.4 512.2,139.8 541.8,139.8" fill="#1e2319"/><path d="M512.2,139.74115006927036 L541.8,139.74115006927036 L556.6,165.38715006927038 L541.8,163.38715006927038  L512.2,163.38715006927038 L497.4,165.38715006927038 Z" fill="#252b1f" opacity=".55"/><path d="M497.4,165.38715006927038 L512.2,191.0331500692704 L541.8,191.0331500692704 L556.6,165.38715006927038 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="556.6,219.1 541.8,244.7 512.2,244.7 497.4,219.1 512.2,193.4 541.8,193.4" fill="#1e2319"/><path d="M512.2,193.43472510390558 L541.8,193.43472510390558 L556.6,219.0807251039056 L541.8,217.0807251039056  L512.2,217.0807251039056 L497.4,219.0807251039056 Z" fill="#252b1f" opacity=".55"/><path d="M497.4,219.0807251039056 L512.2,244.7267251039056 L541.8,244.7267251039056 L556.6,219.0807251039056 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="556.6,272.8 541.8,298.4 512.2,298.4 497.4,272.8 512.2,247.1 541.8,247.1" fill="#2c2719"/><path d="M512.2,247.12830013854074 L541.8,247.12830013854074 L556.6,272.77430013854075 L541.8,270.77430013854075  L512.2,270.77430013854075 L497.4,272.77430013854075 Z" fill="#372f1e" opacity=".55"/><path d="M497.4,272.77430013854075 L512.2,298.42030013854077 L541.8,298.42030013854077 L556.6,272.77430013854075 Z" fill="#221e13" opacity=".5"/><path d="M516.0,278.77430013854075 Q523.0,267.77430013854075 529.0,275.77430013854075 Q534.0,269.77430013854075 539.0,278.77430013854075" fill="none" stroke="rgba(220,190,110,.22)" stroke-width="1.4"/><polygon class="hex" points="556.6,326.5 541.8,352.1 512.2,352.1 497.4,326.5 512.2,300.8 541.8,300.8" fill="#1e2319"/><path d="M512.2,300.82187517317595 L541.8,300.82187517317595 L556.6,326.46787517317597 L541.8,324.46787517317597  L512.2,324.46787517317597 L497.4,326.46787517317597 Z" fill="#252b1f" opacity=".55"/><path d="M497.4,326.46787517317597 L512.2,352.113875173176 L541.8,352.113875173176 L556.6,326.46787517317597 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="556.6,380.2 541.8,405.8 512.2,405.8 497.4,380.2 512.2,354.5 541.8,354.5" fill="#1e2319"/><path d="M512.2,354.51545020781117 L541.8,354.51545020781117 L556.6,380.1614502078112 L541.8,378.1614502078112  L512.2,378.1614502078112 L497.4,380.1614502078112 Z" fill="#252b1f" opacity=".55"/><path d="M497.4,380.1614502078112 L512.2,405.8074502078112 L541.8,405.8074502078112 L556.6,380.1614502078112 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="556.6,433.9 541.8,459.5 512.2,459.5 497.4,433.9 512.2,408.2 541.8,408.2" fill="#1e2319"/><path d="M512.2,408.20902524244633 L541.8,408.20902524244633 L556.6,433.85502524244635 L541.8,431.85502524244635  L512.2,431.85502524244635 L497.4,433.85502524244635 Z" fill="#252b1f" opacity=".55"/><path d="M497.4,433.85502524244635 L512.2,459.50102524244636 L541.8,459.50102524244636 L556.6,433.85502524244635 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="603.1,84.8 588.3,110.5 558.7,110.5 543.9,84.8 558.7,59.2 588.3,59.2" fill="#1e2319"/><path d="M558.7,59.20078751731759 L588.3,59.20078751731759 L603.1,84.8467875173176 L588.3,82.8467875173176  L558.7,82.8467875173176 L543.9,84.8467875173176 Z" fill="#252b1f" opacity=".55"/><path d="M543.9,84.8467875173176 L558.7,110.4927875173176 L588.3,110.4927875173176 L603.1,84.8467875173176 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="603.1,138.5 588.3,164.2 558.7,164.2 543.9,138.5 558.7,112.9 588.3,112.9" fill="#1e2319"/><path d="M558.7,112.8943625519528 L588.3,112.8943625519528 L603.1,138.5403625519528 L588.3,136.5403625519528  L558.7,136.5403625519528 L543.9,138.5403625519528 Z" fill="#252b1f" opacity=".55"/><path d="M543.9,138.5403625519528 L558.7,164.1863625519528 L588.3,164.1863625519528 L603.1,138.5403625519528 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="603.1,192.2 588.3,217.9 558.7,217.9 543.9,192.2 558.7,166.6 588.3,166.6" fill="#1e1e23"/><path d="M558.7,166.58793758658797 L588.3,166.58793758658797 L603.1,192.23393758658798 L588.3,190.23393758658798  L558.7,190.23393758658798 L543.9,192.23393758658798 Z" fill="#26262c" opacity=".55"/><path d="M543.9,192.23393758658798 L558.7,217.879937586588 L588.3,217.879937586588 L603.1,192.23393758658798 Z" fill="#16161a" opacity=".5"/><path d="M563.5,199.23393758658798 L570.5,186.23393758658798 L575.5,193.23393758658798 L579.5,184.23393758658798 L584.5,199.23393758658798 Z" fill="rgba(255,255,255,.09)" stroke="rgba(255,255,255,.18)" stroke-width="1"/><polygon class="hex" points="603.1,245.9 588.3,271.6 558.7,271.6 543.9,245.9 558.7,220.3 588.3,220.3" fill="#1e2319"/><path d="M558.7,220.2815126212232 L588.3,220.2815126212232 L603.1,245.9275126212232 L588.3,243.9275126212232  L558.7,243.9275126212232 L543.9,245.9275126212232 Z" fill="#252b1f" opacity=".55"/><path d="M543.9,245.9275126212232 L558.7,271.5735126212232 L588.3,271.5735126212232 L603.1,245.9275126212232 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="603.1,299.6 588.3,325.3 558.7,325.3 543.9,299.6 558.7,274.0 588.3,274.0" fill="#1e2319"/><path d="M558.7,273.9750876558583 L588.3,273.9750876558583 L603.1,299.62108765585833 L588.3,297.62108765585833  L558.7,297.62108765585833 L543.9,299.62108765585833 Z" fill="#252b1f" opacity=".55"/><path d="M543.9,299.62108765585833 L558.7,325.26708765585835 L588.3,325.26708765585835 L603.1,299.62108765585833 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="603.1,353.3 588.3,378.9 558.7,378.9 543.9,353.3 558.7,327.7 588.3,327.7" fill="#1e2319"/><path d="M558.7,327.66866269049353 L588.3,327.66866269049353 L603.1,353.31466269049355 L588.3,351.31466269049355  L558.7,351.31466269049355 L543.9,353.31466269049355 Z" fill="#252b1f" opacity=".55"/><path d="M543.9,353.31466269049355 L558.7,378.96066269049356 L588.3,378.96066269049356 L603.1,353.31466269049355 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="603.1,407.0 588.3,432.6 558.7,432.6 543.9,407.0 558.7,381.4 588.3,381.4" fill="#1e2319"/><path d="M558.7,381.36223772512875 L588.3,381.36223772512875 L603.1,407.00823772512877 L588.3,405.00823772512877  L558.7,405.00823772512877 L543.9,407.00823772512877 Z" fill="#252b1f" opacity=".55"/><path d="M543.9,407.00823772512877 L558.7,432.6542377251288 L588.3,432.6542377251288 L603.1,407.00823772512877 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="649.6,111.7 634.8,137.3 605.2,137.3 590.4,111.7 605.2,86.1 634.8,86.1" fill="#1e2319"/><path d="M605.2,86.04757503463519 L634.8,86.04757503463519 L649.6,111.69357503463519 L634.8,109.69357503463519  L605.2,109.69357503463519 L590.4,111.69357503463519 Z" fill="#252b1f" opacity=".55"/><path d="M590.4,111.69357503463519 L605.2,137.3395750346352 L634.8,137.3395750346352 L649.6,111.69357503463519 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="649.6,165.4 634.8,191.0 605.2,191.0 590.4,165.4 605.2,139.8 634.8,139.8" fill="#1e2319"/><path d="M605.2,139.74115006927036 L634.8,139.74115006927036 L649.6,165.38715006927038 L634.8,163.38715006927038  L605.2,163.38715006927038 L590.4,165.38715006927038 Z" fill="#252b1f" opacity=".55"/><path d="M590.4,165.38715006927038 L605.2,191.0331500692704 L634.8,191.0331500692704 L649.6,165.38715006927038 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="649.6,219.1 634.8,244.7 605.2,244.7 590.4,219.1 605.2,193.4 634.8,193.4" fill="#1e2319"/><path d="M605.2,193.43472510390558 L634.8,193.43472510390558 L649.6,219.0807251039056 L634.8,217.0807251039056  L605.2,217.0807251039056 L590.4,219.0807251039056 Z" fill="#252b1f" opacity=".55"/><path d="M590.4,219.0807251039056 L605.2,244.7267251039056 L634.8,244.7267251039056 L649.6,219.0807251039056 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="649.6,272.8 634.8,298.4 605.2,298.4 590.4,272.8 605.2,247.1 634.8,247.1" fill="#1e2319"/><path d="M605.2,247.12830013854074 L634.8,247.12830013854074 L649.6,272.77430013854075 L634.8,270.77430013854075  L605.2,270.77430013854075 L590.4,272.77430013854075 Z" fill="#252b1f" opacity=".55"/><path d="M590.4,272.77430013854075 L605.2,298.42030013854077 L634.8,298.42030013854077 L649.6,272.77430013854075 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="649.6,326.5 634.8,352.1 605.2,352.1 590.4,326.5 605.2,300.8 634.8,300.8" fill="#1e2319"/><path d="M605.2,300.82187517317595 L634.8,300.82187517317595 L649.6,326.46787517317597 L634.8,324.46787517317597  L605.2,324.46787517317597 L590.4,326.46787517317597 Z" fill="#252b1f" opacity=".55"/><path d="M590.4,326.46787517317597 L605.2,352.113875173176 L634.8,352.113875173176 L649.6,326.46787517317597 Z" fill="#171b13" opacity=".5"/><polygon class="hex" points="649.6,380.2 634.8,405.8 605.2,405.8 590.4,380.2 605.2,354.5 634.8,354.5" fill="#1e2319"/><path d="M605.2,354.51545020781117 L634.8,354.51545020781117 L649.6,380.1614502078112 L634.8,378.1614502078112  L605.2,378.1614502078112 L590.4,380.1614502078112 Z" fill="#252b1f" opacity=".55"/><path d="M590.4,380.1614502078112 L605.2,405.8074502078112 L634.8,405.8074502078112 L649.6,380.1614502078112 Z" fill="#171b13" opacity=".5"/><circle class="zoc" cx="341.0" cy="272.8" r="53.9"/><circle class="zoc" cx="387.5" cy="245.9" r="53.9"/><g><polygon points="135.5,138.5 122.0,161.9 95.0,161.9 81.5,138.5 95.0,115.2 122.0,115.2" fill="#d9a4411f" stroke="#d9a441" stroke-width="1.9"/><polygon points="131.5,138.5 120.0,158.5 97.0,158.5 85.5,138.5 97.0,118.6 120.0,118.6" fill="none" stroke="#d9a441" stroke-width=".8" opacity=".45"/><text class="tokttl" x="108.5" y="142.5403625519528" fill="#d9a441" style="font-size:14px">크</text></g><g><polygon points="554.0,380.2 540.5,403.5 513.5,403.5 500.0,380.2 513.5,356.8 540.5,356.8" fill="#b04a4a1f" stroke="#b04a4a" stroke-width="1.9"/><polygon points="550.0,380.2 538.5,400.1 515.5,400.1 504.0,380.2 515.5,360.2 538.5,360.2" fill="none" stroke="#b04a4a" stroke-width=".8" opacity=".45"/><text class="tokttl" x="527.0" y="384.1614502078112" fill="#b04a4a" style="font-size:14px">폼</text></g><g><polygon points="600.5,245.9 587.0,269.3 560.0,269.3 546.5,245.9 560.0,222.5 587.0,222.5" fill="#8367b81f" stroke="#8367b8" stroke-width="1.9"/><polygon points="596.5,245.9 585.0,265.8 562.0,265.8 550.5,245.9 562.0,226.0 585.0,226.0" fill="none" stroke="#8367b8" stroke-width=".8" opacity=".45"/><text class="tokttl" x="573.5" y="249.9275126212232" fill="#8367b8" style="font-size:14px">카</text></g><g><circle cx="201.5" cy="243.9275126212232" r="13.5" fill="#101116" stroke="#d9a441" stroke-width="1.9"/><circle cx="201.5" cy="243.9275126212232" r="10" fill="none" stroke="#d9a441" stroke-width=".7" opacity=".4"/><text class="tokttl" x="201.5" y="247.4275126212232" fill="#d9a441">III</text><rect x="187.5" y="258.9275126212232" width="28" height="4" rx="2" fill="rgba(0,0,0,.65)"/><rect x="187.5" y="258.9275126212232" width="23.0" height="4" rx="2" fill="#6aae76"/></g><g><circle cx="294.5" cy="297.62108765585833" r="13.5" fill="#101116" stroke="#b04a4a" stroke-width="1.9"/><circle cx="294.5" cy="297.62108765585833" r="10" fill="none" stroke="#b04a4a" stroke-width=".7" opacity=".4"/><text class="tokttl" x="294.5" y="301.12108765585833" fill="#b04a4a">VI</text><rect x="280.5" y="312.62108765585833" width="28" height="4" rx="2" fill="rgba(0,0,0,.65)"/><rect x="280.5" y="312.62108765585833" width="17.1" height="4" rx="2" fill="#d9ab45"/></g><g><circle cx="480.5" cy="243.9275126212232" r="13.5" fill="#101116" stroke="#8367b8" stroke-width="1.9"/><circle cx="480.5" cy="243.9275126212232" r="10" fill="none" stroke="#8367b8" stroke-width=".7" opacity=".4"/><text class="tokttl" x="480.5" y="247.4275126212232" fill="#8367b8">IV</text><rect x="466.5" y="258.9275126212232" width="28" height="4" rx="2" fill="rgba(0,0,0,.65)"/><rect x="466.5" y="258.9275126212232" width="28.0" height="4" rx="2" fill="#6aae76"/></g><g><circle cx="341.0" cy="219.0807251039056" r="14" fill="#0e1a21" stroke="#4d8296" stroke-width="1.6" filter="url(#soft)"/><path d="M341.0,212.5807251039056 L347.0,219.0807251039056 L341.0,225.5807251039056 L335.0,219.0807251039056 Z" fill="#7fb4c8" opacity=".85"/></g><g><circle cx="248.0" cy="111.69357503463519" r="14" fill="#0e1a21" stroke="#4d8296" stroke-width="1.6" filter="url(#soft)"/><path d="M248.0,105.19357503463519 L254.0,111.69357503463519 L248.0,118.19357503463519 L242.0,111.69357503463519 Z" fill="#7fb4c8" opacity=".85"/></g><g><circle cx="434.0" cy="326.46787517317597" r="14" fill="#0e1a21" stroke="#4d8296" stroke-width="1.6" filter="url(#soft)"/><path d="M434.0,319.96787517317597 L440.0,326.46787517317597 L434.0,332.96787517317597 L428.0,326.46787517317597 Z" fill="#7fb4c8" opacity=".85"/></g><g><circle cx="341.0" cy="272.77430013854075" r="11.5" fill="#101116" stroke="#4d8296" stroke-width="1.6" stroke-dasharray="3 2.4"/><path d="M336.5,268.27430013854075 L345.5,277.27430013854075 M345.5,268.27430013854075 L336.5,277.27430013854075" stroke="#7fb4c8" stroke-width="1.7" stroke-linecap="round"/></g><g><circle cx="387.5" cy="245.9275126212232" r="11.5" fill="#101116" stroke="#4d8296" stroke-width="1.6" stroke-dasharray="3 2.4"/><path d="M383.0,241.4275126212232 L392.0,250.4275126212232 M392.0,241.4275126212232 L383.0,250.4275126212232" stroke="#7fb4c8" stroke-width="1.7" stroke-linecap="round"/></g><g><rect x="143.5" y="207.5807251039056" width="23" height="23" rx="5" fill="#101116" stroke="#d9a44188" stroke-width="1.4"/><text class="tokttl" x="155.0" y="223.5807251039056" fill="#d9a441" style="font-size:12px">⛏</text></g><g><rect x="143.5" y="261.27430013854075" width="23" height="23" rx="5" fill="#101116" stroke="#d9a44188" stroke-width="1.4"/><text class="tokttl" x="155.0" y="277.27430013854075" fill="#d9a441" style="font-size:12px">▦</text></g><g><rect x="515.5" y="314.96787517317597" width="23" height="23" rx="5" fill="#101116" stroke="#b04a4a88" stroke-width="1.4"/><text class="tokttl" x="527.0" y="330.96787517317597" fill="#b04a4a" style="font-size:12px">⚔</text></g><g><rect x="515.5" y="153.88715006927038" width="23" height="23" rx="5" fill="#101116" stroke="#8367b888" stroke-width="1.4"/><text class="tokttl" x="527.0" y="169.88715006927038" fill="#8367b8" style="font-size:12px">♨</text></g><rect width="920" height="540" fill="url(#vig)" pointer-events="none"/></svg></div>
+
+<div id="top">
+  <div class="yld g"><svg class="i"><use href="#i-gold"/></svg><span class="v">2,140</span><span class="d">+310</span></div>
+  <div class="yld f"><svg class="i"><use href="#i-food"/></svg><span class="v">418</span><span class="d neg">−345</span></div>
+  <div class="yld h"><svg class="i"><use href="#i-favor"/></svg><span class="v">42<span class="cap">%</span></span></div>
+  <div class="yld pol gsep"><svg class="i"><use href="#i-power"/></svg><span class="v">80</span><span class="cap">/100</span></div>
+  <div class="yld pol"><svg class="i"><use href="#i-favorpt"/></svg><span class="v">210</span><span class="cap">/600</span></div>
+  <div class="yld pol"><svg class="i"><use href="#i-seat"/></svg><span class="v">104</span><span class="cap">/300</span></div>
+  <div id="topright">
+    <div class="dots"><i class="done"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="tbox"><div class="t">턴 47</div><div class="s">행동 창 · 칸 강림 43턴 뒤</div></div>
+    <div class="timer" id="tmr">1:12</div>
+  </div>
+</div>
+
+<div id="trk">
+  <button class="tk surf" onclick="openM('dig')">
+    <div class="tkh"><svg class="i"><use href="#i-crown"/></svg><span class="tkt">경제 주축</span><span class="tkv">2,110</span></div>
+    <div class="bar"><i style="width:71%"></i></div>
+    <div class="tks">속주 9 · 산출 310/턴 — 매 턴 √규모만큼 디그니타스</div>
+  </button>
+  <button class="tk surf civic" onclick="toast('관직 — 재무관 → 법무관 → 집정관')">
+    <div class="tkh"><svg class="i"><use href="#i-senate"/></svg><span class="tkt">관직 — 법무관</span><span class="tkv">2/3</span></div>
+    <div class="bar"><i style="width:66%"></i></div>
+    <div class="tks">집정관까지 누적 산출 5,000골드 · 3,180 남음</div>
+  </button>
+</div>
+
+<div id="riv">
+  <button class="rv surf a2" onclick="openM('rival2')">
+    <span class="rvr">1</span><span class="rvav">폼</span>
+    <span class="rvn">폼페이우스</span><span class="rvt up"></span></button>
+  <button class="rv surf a3" onclick="openM('rival3')">
+    <span class="rvr">3</span><span class="rvb">독</span><span class="rvav">카</span>
+    <span class="rvn">카이사르</span><span class="rvt flat"></span></button>
+</div>
+
+<div id="ntf">
+  <button class="nt surf hot" onclick="openM('senate')"><svg class="i"><use href="#i-senate"/></svg>
+    <span class="badge">3</span><span class="tip">원로원 소집 — 안건 3건 · 3턴 뒤</span></button>
+  <button class="nt surf" onclick="openM('assembly')"><svg class="i"><use href="#i-scroll"/></svg>
+    <span class="badge">1</span><span class="tip">민회 — 토지법 표결 진행 중</span></button>
+  <button class="nt surf hot" onclick="toast('국가의 적 — 갈리아 나르보넨시스 · 3턴 방어')"><svg class="i"><use href="#i-war"/></svg>
+    <span class="tip">국가의 적 선포 — 방어 참여 시 참여자당 고정 20</span></button>
+  <button class="nt surf" onclick="openM('rival2')"><svg class="i"><use href="#i-coinstack"/></svg>
+    <span class="tip">대출 1,200 — 상환 요구 가능</span></button>
+  <button class="nt surf" onclick="openM('boss')"><svg class="i"><use href="#i-skull"/></svg>
+    <span class="tip">칸 본체 — 43턴 뒤 강림</span></button>
+</div>
+
+<div id="lb">
+  <div class="sel surf">
+    <div class="selh">
+      <div class="selav">III</div>
+      <div><div class="seln">제3군단</div><div class="sels">병영 T2 · 4슬롯 · 언덕</div></div>
+    </div>
+    <div class="selbody">
+      <div class="bar hp"><i style="width:82%"></i></div>
+      <div class="hpn"><span>HP 164 / 200</span><span>구간 ×1.0</span></div>
+    </div>
+    <div class="stats">
+      <div class="st"><b>168</b><span>전투력</span></div>
+      <div class="st"><b>2</b><span>이동</span></div>
+      <div class="st"><b>24%</b><span>회피</span></div>
+      <div class="st"><b>92</b><span>유지비</span></div>
+    </div>
+    <div class="trrow"><span class="trchip">노병</span><span class="trsub">생존 9 / 15</span></div>
+    <div class="acts">
+      <button onclick="toast('이동 — 2타일 (ZOC 진입 시 비용 ×2)')"><svg class="i"><use href="#i-boot"/></svg><span class="al">이동</span></button>
+      <button onclick="toast('공격 — 상성 근접→기병 ×1.5')"><svg class="i"><use href="#i-sword"/></svg><span class="al">공격</span></button>
+      <button class="on" onclick="toast('스탠스 — 공격적 (공 1.2 / 피 1.2)')"><svg class="i"><use href="#i-shield"/></svg><span class="al">스탠스</span></button>
+      <button onclick="openM('form')"><svg class="i"><use href="#i-grid"/></svg><span class="al">편제</span></button>
+      <button onclick="toast('주둔 — 전투 없는 턴 HP 20% 회복')"><svg class="i"><use href="#i-tent"/></svg><span class="al">주둔</span></button>
+      <button onclick="toast('점령 — 인접 속주')"><svg class="i"><use href="#i-flag"/></svg><span class="al">점령</span></button>
+      <button disabled><svg class="i"><use href="#i-wrench"/></svg><span class="al">수리</span></button>
+      <button onclick="toast('해산 — 유지비 회수')"><svg class="i"><use href="#i-x"/></svg><span class="al">해산</span></button>
+    </div>
+  </div>
+  <div id="mini" class="surf">
+    <div class="mmt"><span>속주 32 · 30×50</span><span>둥지 3</span></div>
+    <svg viewBox="0 0 240 80">
+      <rect width="240" height="80" fill="#0c0d11" rx="5"/>
+      <g opacity=".6">
+        <rect x="16" y="11" width="54" height="26" rx="3" fill="#1e2319"/>
+        <rect x="74" y="9" width="62" height="32" rx="3" fill="#182a1c"/>
+        <rect x="140" y="13" width="50" height="28" rx="3" fill="#2c2719"/>
+        <rect x="42" y="42" width="72" height="26" rx="3" fill="#16232e"/>
+        <rect x="120" y="44" width="70" height="24" rx="3" fill="#1e2319"/>
+      </g>
+      <circle cx="32" cy="22" r="4.6" fill="#d9a441"/>
+      <circle cx="182" cy="56" r="4.6" fill="#b04a4a"/>
+      <circle cx="192" cy="26" r="4.6" fill="#8367b8"/>
+      <circle cx="100" cy="28" r="3.4" fill="#4d8296"/>
+      <circle cx="66" cy="17" r="3.4" fill="#4d8296"/>
+      <circle cx="146" cy="52" r="3.4" fill="#4d8296"/>
+      <rect x="56" y="15" width="68" height="36" rx="3" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+    </svg>
+  </div>
+</div>
+
+<button id="end" onclick="toast('턴 종료 선언 — 1 / 3 (전원 선언 시 조기 마감)')">
+  <span class="big">턴 종료</span><span class="sm">선언 1 / 3</span></button>
+<div class="note" style="top:58px;left:292px">① 상단 = 내 산출만</div>
+<div class="note" style="top:150px;left:292px">② 트래커 — 문명6 연구/문화 자리</div>
+<div class="note" style="top:64px;right:96px">③ 다른 2인 = 초상, 클릭해야 상세</div>
+<div class="note" style="top:228px;right:78px">④ 알림 스택</div>
+<div class="note" style="bottom:326px;left:292px">⑤ 선택 편제 + 행동 그리드 + 미니맵</div>
+<div class="note" style="bottom:72px;right:216px">⑥ 턴 종료</div>
+
+<div class="veil" id="veil" onclick="closeM()"></div>
+
+<div class="modal" id="m-senate">
+  <div class="mh"><div><div class="mt">원로원 — 제5차 세션</div>
+    <div class="ms">표 무게 = 의석 + 베팅 정치력 × 3 · 안건별 독립 찬반 · 효과는 다음 턴부터 · ★결과 전에는 제출 인원 수만 공개</div></div><button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="card">
+      <div class="cardt">동방 사령권</div>
+      <div class="cardd">보유자는 대(對)칸 전투력 ×1.15 + 본체 기여 지분 +10%p. 발의: 폼페이우스</div>
+      <div class="vbar"><div class="vfor" style="width:58%"></div><div class="vag" style="width:26%"></div></div>
+      <div class="vnum"><span>제출 1 / 3</span><span>결과 전 비공개</span></div>
+      <div class="vact"><button class="yes" onclick="toast('찬성 — 무료')">찬성</button>
+        <button class="no" onclick="toast('반대 — 정치력 30')">반대 · 30</button></div>
+      <div class="betr"><span class="mini">베팅</span>
+        <input type="range" min="0" max="80" value="30"
+          oninput="document.getElementById('bv1').textContent=this.value+' → '+(this.value*3)+'표'">
+        <span class="betv" id="bv1">30 → 90표</span></div>
+    </div>
+    <div class="card">
+      <div class="cardt">공동 국고 배분</div>
+      <div class="cardd">누적 420골드. 부결·미발의 시 이월된다.</div>
+      <div class="vbar"><div class="vfor" style="width:34%"></div><div class="vag" style="width:41%"></div></div>
+      <div class="vnum"><span>제출 1 / 3</span><span>결과 전 비공개</span></div>
+      <div class="vact"><button class="yes">찬성</button><button class="no">반대 · 30</button></div>
+    </div>
+    <div class="card">
+      <div class="cardt">과반 제재 — 폼페이우스</div>
+      <div class="cardd">디그니타스 격차 ×1.2 초과. 독재관도 거부권을 쓸 수 없고, 판정은 가결 시점이다.</div>
+      <div class="vbar"><div class="vfor" style="width:62%"></div><div class="vag" style="width:20%"></div></div>
+      <div class="vnum"><span>제출 1 / 3</span><span>결과 전 비공개</span></div>
+      <div class="vact"><button class="yes">찬성</button><button class="no">반대 · 30</button></div>
+    </div>
+  </div>
+  <div class="mf"><span class="mini" style="margin-right:auto">60초 · 무응답 시 기권</span>
+    <button class="act" onclick="closeM()">기권</button>
+    <button class="act prim" onclick="closeM();toast('표결 제출')">제출</button></div>
+</div>
+
+<div class="modal" id="m-assembly">
+  <div class="mh"><div><div class="mt">민회</div>
+    <div class="ms">민심포인트만으로 찬반 베팅 — 정치력 환산 없음 · 진 쪽은 절반 환급 · ★베팅액은 결과 전까지 비공개</div></div><button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="card">
+      <div class="cardt">토지법</div>
+      <div class="cardd">의석 최다에게서 6석 회수 → 나머지 2인에게 +3 / +3. 대상: 폼페이우스. 유일한 대인 법안이다.</div>
+      <div class="vbar"><div class="vfor" style="width:47%"></div><div class="vag" style="width:38%"></div></div>
+      <div class="vnum"><span>제출 2 / 3</span><span>결과 전 비공개</span></div>
+      <div class="betr"><span class="mini">베팅</span>
+        <input type="range" min="0" max="210" value="120"
+          oninput="document.getElementById('bv2').textContent=this.value+' 민심P'">
+        <span class="betv" id="bv2">120 민심P</span></div>
+      <div class="vact"><button class="yes">찬성</button><button class="no">반대</button></div>
+    </div>
+    <h4 class="sh">그 밖의 법안 — 속주 약버프</h4>
+    <div class="row"><span class="k">곡물 보조 / 시장 특혜</span><span class="v">식량·골드 +25% · 5턴</span></div>
+    <div class="row"><span class="k">향토 모병</span><span class="v">징병 비용 −20% · 5턴</span></div>
+    <div class="row"><span class="k">구휼</span><span class="v">발의자 지지율 +8</span></div>
+    <div class="row"><span class="k">제재 무효법</span><span class="v">자신에 걸린 과반 제재 해제</span></div>
+  </div>
+  <div class="mf"><span class="mini" style="margin-right:auto">45초 · 무응답 시 기권 · 베팅 0</span>
+    <button class="act prim" onclick="closeM();toast('베팅 제출')">제출</button></div>
+</div>
+
+<div class="modal" id="m-boss">
+  <div class="mh"><div><div class="mt">칸 본체</div>
+    <div class="ms">세 게이지를 모두 돌파해야 격파 · 누구나 어느 게이지든 기여할 수 있고 효율만 차등이다</div></div><button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="gz"><div class="gzt"><span>칸의 호위</span><span class="w">전문 폼페 ×1.0 · 나 ×0.6</span></div>
+      <div class="bar g1"><i style="width:72%"></i></div>
+      <div class="gzn"><span>1,080 / 1,500</span><span>돌파까지 420</span></div></div>
+    <div class="gz"><div class="gzt"><span>재생 · 증원</span><span class="w">전문 카이사르</span></div>
+      <div class="bar g2"><i style="width:45%"></i></div>
+      <div class="gzn"><span>450 / 1,000</span><span>돌파까지 550</span></div></div>
+    <div class="gz"><div class="gzt"><span>본체 HP</span><span class="w">내 전문 영역 ×1.0</span></div>
+      <div class="bar g3"><i style="width:38%"></i></div>
+      <div class="gzn"><span>3,100 / 5,000</span><span>실피해 1,575/턴</span></div></div>
+    <div class="fml">실피해 = 명목피해 × (1 − <b>guardDefenseMult</b>) × (1 + <b>siegeProgress</b>)
+
+시작 1.0 → 실피해 0     호위를 깨기 전엔 본체를 때릴 수 없다
+하한 0.3 → 명목 × 0.7   완전히 돌파해도 끝까지 단단하다</div>
+    <h4 class="sh">기여 원장 — 격파 풀 500은 이 비율로 나뉜다</h4>
+    <div class="dg"><span class="n">폼페이우스</span><div class="bar d1"><i style="width:44%"></i></div><span class="v">44%</span></div>
+    <div class="dg"><span class="n">나</span><div class="bar d2"><i style="width:33%"></i></div><span class="v">33%</span></div>
+    <div class="dg"><span class="n">카이사르</span><div class="bar d3"><i style="width:23%"></i></div><span class="v">23%</span></div>
+    <div class="mini" style="margin-top:10px">막타에 +50이 별도로 붙지만 독식은 없다</div>
+  </div>
+</div>
+
+<div class="modal" id="m-dig">
+  <div class="mh"><div><div class="mt">디그니타스</div>
+    <div class="ms">순위는 항상 공개 · 정확한 격차는 숨긴다 — 막판 숫자 최적화를 막기 위해</div></div><button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="dg"><span class="n">1 폼페이우스</span><div class="bar d1"><i style="width:100%"></i></div><span class="v">■■■</span></div>
+    <div class="dg"><span class="n">2 나</span><div class="bar d2"><i style="width:88%"></i></div><span class="v">■■</span></div>
+    <div class="dg"><span class="n">3 카이사르</span><div class="bar d3"><i style="width:79%"></i></div><span class="v">■■</span></div>
+    <div class="mini" style="margin-top:9px">선두 격차가 ×1.2를 넘었다 — 과반 제재를 발동할 수 있다</div>
+    <h4 class="sh">내 점수 구성</h4>
+    <div class="row"><span class="k">개별 축 — 경제</span><span class="v">rate × √2,110</span></div>
+    <div class="row"><span class="k">공용 트리거 누적</span><span class="v">395</span></div>
+    <h4 class="sh">공용 트리거</h4>
+    <div class="row"><span class="k">칸 유닛 / 둥지 / 속주</span><span class="v">+15 / +60 / +20</span></div>
+    <div class="row"><span class="k">불가사의 / 관직 / 개선식</span><span class="v">+200 / +30 / +150</span></div>
+    <div class="row"><span class="k">본체 격파 풀</span><span class="v">500 · 기여 비례</span></div>
+    <h4 class="sh">동점이면</h4>
+    <div class="mini">관직 등급 → 불가사의 수 → 의석 → (최후) 호스트</div>
+  </div>
+</div>
+
+<div class="modal" id="m-form" style="width:min(480px,94vw)">
+  <div class="mh"><div><div class="mt">제3군단 — 편제</div>
+    <div class="ms">병영 T2 · 4슬롯 · 슬롯 수가 비용·유지비·전투력·드롭에 모두 곱해진다</div></div><button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="slots">
+      <div class="slot full"><div class="sn">군단병</div><div class="sc">20</div></div>
+      <div class="slot full"><div class="sn">군단병</div><div class="sc">20</div></div>
+      <div class="slot full"><div class="sn">에퀴테스</div><div class="sc">32</div></div>
+      <div class="slot"><div class="sn">빈 슬롯</div></div>
+    </div>
+    <div class="row"><span class="k">편제 전투력</span><span class="v">168</span></div>
+    <div class="row"><span class="k">식량 유지비</span><span class="v">92 / 턴</span></div>
+    <div class="row"><span class="k">트레잇</span><span class="v">노병 · 생존 9/15</span></div>
+    <div class="mini" style="margin-top:10px">농장 T1 4채 ≈ T3 편제 1개 — 식량이 실질적인 편제 상한이다</div>
+  </div>
+  <div class="mf"><button class="act prim" onclick="closeM();toast('편성 저장')">확인</button></div>
+</div>
+
+<div class="modal" id="m-rival2" style="width:min(450px,94vw)">
+  <div class="mh"><div><div class="mt">폼페이우스</div>
+    <div class="ms">군사 축 · 1위 — 남의 내부 수치는 보이지 않는다</div></div><button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="row"><span class="k">디그니타스</span><span class="v">1위 · 격차 비공개</span></div>
+    <div class="row"><span class="k">의석</span><span class="v">122 · 상시 공개</span></div>
+    <div class="row"><span class="k">관직</span><span class="v">집정관</span></div>
+    <div class="row"><span class="k">나에게 진 빚</span><span class="v">1,200 / 2,000</span></div>
+    <h4 class="sh">할 수 있는 것</h4>
+    <button class="act" style="width:100%;margin-bottom:8px" onclick="closeM();toast('상환 요구 — 폼페이우스')">상환 요구</button>
+    <button class="act" style="width:100%;margin-bottom:8px" onclick="closeM();toast('거래 제안 — 골드·식량만')">거래 제안</button>
+    <button class="act" style="width:100%" onclick="closeM();openM('senate')">과반 제재 발의</button>
+    <div class="mini" style="margin-top:11px">거래는 골드·식량만 가능하다. 정치력·의석·지지율은 거래할 수 없다 — 표 사재기 차단.</div>
+  </div>
+</div>
+
+<div class="modal" id="m-rival3" style="width:min(450px,94vw)">
+  <div class="mh"><div><div class="mt">카이사르</div>
+    <div class="ms">정치 축 · 3위 · 독재관 임기 7/10턴</div></div><button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="row"><span class="k">디그니타스</span><span class="v">3위</span></div>
+    <div class="row"><span class="k">의석</span><span class="v">74</span></div>
+    <div class="row"><span class="k">권한</span><span class="v">표 +2 · 거부권 · 징발권</span></div>
+    <div class="mini" style="margin-top:10px">임기가 끝나면 반납(+50)하거나 유임해 참주가 된다.
+참주는 점증 페널티를 받고, 새 독재관 선출이나 과반 제재로 끌어내릴 수 있다.</div>
+    <h4 class="sh">할 수 있는 것</h4>
+    <button class="act" style="width:100%;margin-bottom:8px" onclick="closeM();toast('거래 제안')">거래 제안</button>
+    <button class="act" style="width:100%" onclick="closeM();toast('새 독재관 선출 발의')">새 독재관 발의</button>
+  </div>
+</div>
+<div id="toast"></div>
+<button id="ntog" class="act" style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:50;font-size:11.5px">설명 켜기</button>
+
+<!-- ══════════ 2026-08-10 추가 화면 13종 ══════════ -->
+
+<!-- ① 건설 -->
+<div class="modal" id="m-build">
+  <div class="mh"><div><div class="mt">건설 — 언덕 (속주 9 · 로마 근교)</div>
+    <div class="ms">타일 지형이 지을 수 있는 건물을 정한다 · 크라수스 건설 환율 ×0.8 적용가</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="g2">
+      <div class="card pick on"><div class="cardt">광산</div>
+        <div class="cardd">언덕 전용 · 골드 100/턴. 기준 건물이고 ROI 약 5턴이다.</div>
+        <div class="cost"><span>골드 <b>400</b> <span style="color:var(--dim)">(500 × 0.8)</span></span><span>2턴</span><span>의석 +3</span></div>
+        <div class="tier"><i class="on"></i><i class="next"></i><i></i></div>
+        <div class="mini" style="margin-top:7px">T1 100 → T2 180 → T3 260 · 업그레이드 500골드 / 3턴</div></div>
+      <div class="card pick"><div class="cardt">병영</div>
+        <div class="cardd">편제 슬롯 3칸. 슬롯 수가 편제의 비용·유지비·전투력·드롭에 모두 곱해진다.</div>
+        <div class="cost"><span>골드 <b>320</b></span><span>2턴</span><span>의석 +3</span></div>
+        <div class="tier"><i class="on"></i><i class="next"></i><i></i></div>
+        <div class="mini" style="margin-top:7px">T1 3슬롯 → T2 4 → T3 6</div></div>
+      <div class="card pick no"><div class="cardt">농장</div>
+        <div class="cardd">평지 전용 · 식량 90/턴.</div>
+        <div class="cost"><span>골드 <b>360</b></span><span>2턴</span></div>
+        <div class="why">이 타일은 언덕이다 — 평지에만 지을 수 있다</div></div>
+      <div class="card pick no"><div class="cardt">목욕탕</div>
+        <div class="cardd">물가 전용 · 민심 120/턴.</div>
+        <div class="cost"><span>골드 <b>480</b></span><span>2턴</span></div>
+        <div class="why">이 타일은 물에 접하지 않는다</div></div>
+    </div>
+    <h4 class="sh">지을 수 없는 이유는 항상 카드 위에 적는다</h4>
+    <div class="exp">지형 불일치 · 골드 부족 · 이미 건물 있음 · 칸 점거 중 — 네 가지뿐이다.
+비활성 버튼만 두고 이유를 숨기면 플레이어가 지형 규칙을 못 배운다.</div>
+  </div>
+  <div class="mf"><span class="mini" style="margin-right:auto">보유 2,140골드 → 건설 후 1,740</span>
+    <button class="act" onclick="closeM()">취소</button>
+    <button class="act prim" onclick="closeM();toast('광산 건설 시작 — 2턴 뒤 완공')">광산 건설</button></div>
+</div>
+
+<!-- ② 유닛 모집 -->
+<div class="modal wide" id="m-recruit">
+  <div class="mh"><div><div class="mt">모집 — 제3군단 (병영 T2 · 4슬롯)</div>
+    <div class="ms">유닛이 아니라 편제 단위로 움직인다 · 표시가는 슬롯 1칸당 · 크라수스 모집 환율 ×1.0</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <table class="tb">
+      <tr><th>유닛</th><th>병종</th><th>티어</th><th style="text-align:right">전투력</th><th style="text-align:right">HP</th>
+          <th style="text-align:right">골드</th><th style="text-align:right">식량</th><th style="text-align:right">유지비/턴</th><th></th></tr>
+      <tr class="me"><td>군단병</td><td>근접</td><td>T1</td><td class="n">20</td><td class="n">110</td>
+        <td class="n">300</td><td class="n">30</td><td class="n">15</td><td class="n">×2</td></tr>
+      <tr><td>에퀴테스</td><td>충격기병</td><td>T1</td><td class="n">32</td><td class="n">100</td>
+        <td class="n">550</td><td class="n">40</td><td class="n">25</td><td class="n">×1</td></tr>
+      <tr><td>갈리아 궁병</td><td>원거리</td><td>T1</td><td class="n">16</td><td class="n">90</td>
+        <td class="n">320</td><td class="n">30</td><td class="n">15</td><td class="n">—</td></tr>
+      <tr><td>누미디아 장갑기병</td><td>충격기병</td><td>T2</td><td class="n">60</td><td class="n">150</td>
+        <td class="n">1,100</td><td class="n">70</td><td class="n">40</td><td class="n">—</td></tr>
+      <tr><td>크레타 궁병</td><td>원거리</td><td>T2</td><td class="n">34</td><td class="n">130</td>
+        <td class="n">650</td><td class="n">50</td><td class="n">25</td><td class="n">—</td></tr>
+      <tr><td>마르스 군단병</td><td>근접</td><td>T3</td><td class="n">75</td><td class="n">200</td>
+        <td class="n">1,600</td><td class="n">100</td><td class="n">50</td><td class="n">—</td></tr>
+    </table>
+    <h4 class="sh">이번 모집</h4>
+    <div class="row"><span class="k">골드</span><span class="v">300 × 2 + 550 = 1,150</span></div>
+    <div class="row"><span class="k">식량 즉시</span><span class="v">100</span></div>
+    <div class="row"><span class="k">식량 유지비</span><span class="v">55 / 턴 → 총 92 / 턴</span></div>
+    <div class="warnbox" style="margin-top:14px">농장 T1 4채 ≈ T3 편제 1개. 골드가 아니라 <b>식량</b>이 실질적인 편제 상한이다 —
+유지비를 못 내면 편제가 굶어 전투력이 깎인다.</div>
+  </div>
+  <div class="mf"><span class="mini" style="margin-right:auto">빈 슬롯 1칸 남음</span>
+    <button class="act" onclick="closeM()">취소</button>
+    <button class="act prim" onclick="closeM();toast('제3군단 — 군단병 2 · 에퀴테스 1 모집')">모집</button></div>
+</div>
+
+<!-- ③ 속주 상세 -->
+<div class="modal" id="m-province">
+  <div class="mh"><div><div class="mt">속주 9 — 로마 근교</div>
+    <div class="ms">타일 6칸 · 소유 나 · 총독 없음</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <h4 class="sh">산출</h4>
+    <div class="row"><span class="k">골드</span><span class="v">180 / 턴</span></div>
+    <div class="row"><span class="k">식량</span><span class="v">90 / 턴</span></div>
+    <div class="row"><span class="k">민심</span><span class="v">0 / 턴</span></div>
+    <div class="row"><span class="k">경제 규모 기여</span><span class="v">속주 100 + 산출 270 = 370</span></div>
+    <h4 class="sh">건물</h4>
+    <table class="tb">
+      <tr><th>타일</th><th>건물</th><th>티어</th><th style="text-align:right">산출</th><th></th></tr>
+      <tr><td>언덕 A</td><td>광산</td><td>T2</td><td class="n">골드 180</td><td class="n">업글 500 / 4턴</td></tr>
+      <tr><td>평지 B</td><td>농장</td><td>T1</td><td class="n">식량 90</td><td class="n">업글 500 / 3턴</td></tr>
+      <tr><td>언덕 C</td><td>—</td><td>—</td><td class="n">—</td><td class="n">건설 가능</td></tr>
+      <tr><td>숲 D</td><td>—</td><td>—</td><td class="n">—</td><td class="n">건설 가능</td></tr>
+    </table>
+    <h4 class="sh">총독</h4>
+    <div class="exp">원로원 안건으로 지명한다(발의 15 정치력). 지명되면 대상 속주 산출 +25%는 <b>속주 소유자</b>에게,
+정치력 +3/턴은 <b>지명한 사람</b>에게 간다 — 그래서 남의 속주에 총독을 꽂는 거래가 성립한다.</div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button>
+    <button class="act prim" onclick="openM('build')">건설</button></div>
+</div>
+
+<!-- ④ 대출 -->
+<div class="modal" id="m-loan">
+  <div class="mh"><div><div class="mt">대출 — 크라수스</div>
+    <div class="ms">무이자 · 1인당 상한 2,000골드 · 이자가 없는 대신 상환 요구권과 디폴트 벌이 값이다</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <h4 class="sh">내가 빌려준 것</h4>
+    <div class="card">
+      <div class="cardt">폼페이우스 — 1,200 / 2,000</div>
+      <div class="cardd">14턴에 대출. 빚이 있는 동안 채무자는 매 턴 디그니타스 −3을 문다.</div>
+      <div class="vbar"><i class="vfor" style="width:60%"></i></div>
+      <div class="vnum"><span>상환 한도까지 800</span><span>연체 없음</span></div>
+      <div class="vact"><button class="no">상환 요구</button><button>증액 제안</button></div>
+      <div class="exp" style="margin-top:9px">상환 요구를 걸면 3턴 안에 갚아야 한다. 넘기면 자동 디폴트 —
+원금 ×0.15(하한 30)만큼 디그니타스가 깎이고 재대출이 영구 차단된다.</div>
+    </div>
+    <div class="card">
+      <div class="cardt">카이사르 — 요청 800</div>
+      <div class="cardd">15턴에 요청. 수락하면 즉시 이체된다.</div>
+      <div class="vact"><button class="yes">수락</button><button class="no">거절</button></div>
+    </div>
+    <h4 class="sh">규칙</h4>
+    <div class="row"><span class="k">이자율</span><span class="v">0</span></div>
+    <div class="row"><span class="k">1인 상한</span><span class="v">2,000골드</span></div>
+    <div class="row"><span class="k">보유 중 디그니타스</span><span class="v">−3 / 턴</span></div>
+    <div class="row"><span class="k">상환 요구 후 기한</span><span class="v">3턴</span></div>
+    <div class="row"><span class="k">디폴트 벌</span><span class="v">원금 × 0.15 (최소 30)</span></div>
+    <div class="row"><span class="k">게임 종료 시 미상환</span><span class="v">자동 디폴트</span></div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button></div>
+</div>
+
+<!-- ⑤ 트레잇 -->
+<div class="modal" id="m-trait">
+  <div class="mh"><div><div class="mt">제3군단 — 트레잇</div>
+    <div class="ms">편제당 1슬롯 · 백지 신병이 싸우면서 얻는다 · 임계를 넘는 순간 자동 부여</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="okbox">보유 중 — <b>노병</b> · 전투력 +8% (생존 전투 8회 달성)</div>
+    <h4 class="sh">다음 후보</h4>
+    <div class="card"><div class="cardt">불패 <span class="mini">Invicta</span></div>
+      <div class="cardd">첫 피격 무효 1회. 노병 다음 단계다.</div>
+      <div class="bar"><i style="width:60%"></i></div>
+      <div class="vnum"><span>생존 전투 9 / 15</span><span>6회 남음</span></div></div>
+    <div class="card"><div class="cardt">산악 <span class="mini">Montana</span></div>
+      <div class="cardd">산 이동 무시 + 전투 +15%.</div>
+      <div class="bar"><i style="width:40%"></i></div>
+      <div class="vnum"><span>산악 전투 2 / 5</span><span>3회 남음</span></div></div>
+    <div class="card"><div class="cardt">승전 <span class="mini">Victrix</span></div>
+      <div class="cardd">연승당 +5%(최대 +25%). 패배하면 연승이 리셋된다.</div>
+      <div class="bar"><i style="width:67%"></i></div>
+      <div class="vnum"><span>현재 연승 2 / 3</span><span>1승 남음</span></div></div>
+    <h4 class="sh">슬롯이 1칸뿐이다</h4>
+    <div class="mini">임계형 12종 중 먼저 도달한 것이 들어간다. 이미 차 있으면 새 트레잇은 안 붙는다 —
+어떤 트레잇을 노릴지는 <b>편제를 어디서 어떻게 싸우게 하느냐</b>로 정한다.
+전환형 4종(복수·불굴·인내·단련)은 디버프를 극복해야 나오고 5턴 뒤 만료돼 슬롯을 비운다.</div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button></div>
+</div>
+
+<!-- ⑥ 불가사의 -->
+<div class="modal wide" id="m-wonder">
+  <div class="mh"><div><div class="mt">불가사의</div>
+    <div class="ms">6종 · 선착순 단일 인스턴스 — 먼저 완성한 자가 갖고, 나머지는 영영 못 짓는다 · 완성 디그니타스 +200</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="g2">
+      <div class="card pick"><div class="cardt">콜로세움</div>
+        <div class="cardd">민심 +50/턴 + 민회 베팅 가중 +20%. 개선식 보상도 ×1.5가 된다.</div>
+        <div class="cost"><span>골드 <b>4,000</b></span><span>6턴</span></div></div>
+      <div class="card pick"><div class="cardt">오벨리스크</div>
+        <div class="cardd">골드 +200/턴 · 적 처치마다 +50골드.</div>
+        <div class="cost"><span>골드 <b>3,500</b></span><span>5턴</span></div></div>
+      <div class="card pick"><div class="cardt">개선문</div>
+        <div class="cardd">전투 승리 후 정치력 +50 / 트레잇 임계 −1.</div>
+        <div class="cost"><span>골드 <b>3,500</b></span><span>5턴</span></div></div>
+      <div class="card pick"><div class="cardt">사투르누스 신전</div>
+        <div class="cardd">자기 속주 골드 산출 +25%.</div>
+        <div class="cost"><span>골드 <b>4,500</b></span><span>7턴</span></div></div>
+      <div class="card pick no"><div class="cardt">대극장</div>
+        <div class="cardd">완성 시 1회 · 대상 1명 지정 → 민심포인트 소각.</div>
+        <div class="cost"><span>골드 <b>4,000</b> + 정치력 <b>60</b></span><span>6턴</span></div>
+        <div class="why">정치력 부족 — 80 / 60 필요하나 다른 곳에 묶여 있다</div></div>
+      <div class="card pick no"><div class="cardt">전차경기장</div>
+        <div class="cardd">자기 기병 이동력 +1 · 민심 +30.</div>
+        <div class="cost"><span>골드 <b>3,000</b></span><span>4턴</span></div>
+        <div class="why">카이사르가 3턴째 건설 중 — 선착순이라 지금 시작해도 늦는다</div></div>
+    </div>
+    <div class="exp" style="margin-top:14px">남이 짓는 중인 불가사의는 진행 턴수까지 공개한다.
+숨기면 "먼저 완성한 자가 갖는다"는 규칙이 도박이 되고, 공개하면 <b>포기하거나 방해하는</b> 판단이 생긴다.</div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button>
+    <button class="act prim" onclick="closeM();toast('콜로세움 착공 — 6턴')">착공</button></div>
+</div>
+
+<!-- ⑦ 개선식 · 관직 -->
+<div class="modal" id="m-office">
+  <div class="mh"><div><div class="mt">개선식 · 관직</div>
+    <div class="ms">둘 다 업적 포인트를 문턱으로 쓴다 — 싸운 기록이 정치 자격이 되는 통로</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <h4 class="sh">업적 포인트</h4>
+    <div class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+    <div class="exp" style="margin-top:8px">4 / 8 · 칸 유닛 격파 +1 · 둥지 파괴 +4 · 직접 정복 +3 · 본체 역할 행동 +1</div>
+    <h4 class="sh">개선식 발의</h4>
+    <div class="card">
+      <div class="cardt">개선식 승인</div>
+      <div class="cardd">원로원 안건으로 올린다. 가결되면 디그니타스 +150 · 의석 +5.
+콜로세움을 갖고 있으면 ×1.5가 되어 +225다.</div>
+      <div class="cost"><span>발의 정치력 <b>25</b></span><span class="no">업적 8 필요 — 4 모자람</span></div>
+    </div>
+    <h4 class="sh">관직</h4>
+    <table class="tb">
+      <tr><th>관직</th><th>조건 (하나만 채우면 된다)</th><th style="text-align:right">현재</th></tr>
+      <tr class="me"><td>재무관</td><td>속주 2개</td><td class="n">9 ✓ 취임</td></tr>
+      <tr class="me"><td>법무관</td><td>업적 5 · 또는 주도 가결 법안 2 · 또는 T2+ 건물 3</td><td class="n">4 / 1 / 3 ✓ 취임</td></tr>
+      <tr><td>집정관</td><td>개선식 1 · 또는 주도 가결 안건 4 · 또는 불가사의 1 · 또는 누적 산출 5,000골드</td>
+        <td class="n">0 / 1 / 0 / 1,820</td></tr>
+    </table>
+    <div class="exp" style="margin-top:10px">취임하면 디그니타스 +30 · 의석 +5. 관직 등급은 디그니타스 동점 시 첫 번째 판정 기준이다.</div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button>
+    <button class="act" disabled style="opacity:.4">개선식 발의</button></div>
+</div>
+
+<!-- ⑧ 국가의 적 -->
+<div class="modal" id="m-enemy">
+  <div class="mh"><div><div class="mt">국가의 적 — 속주 21</div>
+    <div class="ms">12턴마다 자동 발령 · 독재관은 정치력 20으로 앞당겨 선포할 수 있다</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="warnbox">속주 21을 <b>3턴</b> 동안 지켜야 한다. 2턴 남음.</div>
+    <h4 class="sh">참여 현황</h4>
+    <div class="absent"><i class="dot ok"></i><span>폼페이우스</span><span class="st">편제 2 배치 — 참여</span></div>
+    <div class="absent"><i class="dot ok"></i><span>나</span><span class="st">편제 1 배치 — 참여</span></div>
+    <div class="absent"><i class="dot off"></i><span>카이사르</span><span class="st">미배치</span></div>
+    <h4 class="sh">정산</h4>
+    <div class="row"><span class="k">참여자 각자</span><span class="v">디그니타스 +20 (고정)</span></div>
+    <div class="row"><span class="k">미참여</span><span class="v">디그니타스 −10</span></div>
+    <div class="exp" style="margin-top:12px">보상이 <b>고정</b>이고 기여 비례가 아니다 — 최소한만 보내는 무임승차를 막을 수 없다는 뜻이고,
+그건 의도다. 방어에 편제를 묶는 것 자체가 다른 데서 못 쓰는 비용이다.
+원로원은 선포를 뒤집을 수 있고, 참주는 선포할 수 없다. 독재관이 공석이면 칸이 자동으로 선포한다.</div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button>
+    <button class="act prim" onclick="closeM();toast('속주 21로 편제 이동 명령')">방어 배치</button></div>
+</div>
+
+<!-- ⑨ 부재 · 타임아웃 -->
+<div class="modal" id="m-absent">
+  <div class="mh"><div><div class="mt">표결 대기 — 원로원 제5차</div>
+    <div class="ms">3인이 전부 제출해야 다음으로 간다 · 60초 뒤 무응답은 기권 처리</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="absent"><i class="dot ok"></i><span>나</span><span class="st">제출 완료</span></div>
+    <div class="absent"><i class="dot wait"></i><span>폼페이우스</span><span class="st">작성 중 · 38초</span></div>
+    <div class="absent"><i class="dot off"></i><span>카이사르</span><span class="st">연결 끊김 · 12초째</span></div>
+    <h4 class="sh">끊긴 사람은 이렇게 처리한다</h4>
+    <div class="row"><span class="k">원로원 표결</span><span class="v">60초 · 무응답 = 기권</span></div>
+    <div class="row"><span class="k">민회 표결</span><span class="v">45초 · 무응답 = 기권 · 베팅 0</span></div>
+    <div class="row"><span class="k">턴 타이머</span><span class="v">60초(1~15턴) / 90초(16~89턴)</span></div>
+    <div class="row"><span class="k">원로원 열린 턴</span><span class="v">+60초</span></div>
+    <div class="row"><span class="k">본체전</span><span class="v">120초</span></div>
+    <div class="row"><span class="k">3인 전원 「턴 종료」 선언</span><span class="v">즉시 조기 마감</span></div>
+    <div class="exp" style="margin-top:12px">연속 무응답이면 기본값을 넣어 판을 굴리고, 재접속하는 즉시 조종권을 돌려준다.
+자리를 비운 사람 때문에 나머지 둘이 멈춰 서는 상황을 만들지 않는 것이 이 화면의 유일한 목적이다.</div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button></div>
+</div>
+
+<!-- ⑩ 설정 · 일시정지 -->
+<div class="modal" id="m-pause">
+  <div class="mh"><div><div class="mt">일시정지</div>
+    <div class="ms">멀티에서는 누구나 걸 수 있고 누구나 풀 수 있다 — 건 사람만 풀 수 있으면 인질이 된다</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="okbox">폼페이우스가 12초 전에 일시정지했다.</div>
+    <h4 class="sh">표시</h4>
+    <div class="opt"><div class="lbl">전투 예측 표시<div class="sub2">공격 전에 예상 피해를 띄운다</div></div><div class="sw on"><i></i></div></div>
+    <div class="opt"><div class="lbl">추천 행동 안내<div class="sub2">온보딩 5항목이 끝나면 자동으로 꺼진다</div></div><div class="sw on"><i></i></div></div>
+    <div class="opt"><div class="lbl">데미지 숫자<div class="sub2">전투 결과를 맵 위에 띄운다</div></div><div class="sw on"><i></i></div></div>
+    <div class="opt"><div class="lbl">타일 격자<div class="sub2">헥스 경계선을 상시 표시</div></div><div class="sw"><i></i></div></div>
+    <h4 class="sh">소리</h4>
+    <div class="opt"><div class="lbl">배경음</div><div class="bar" style="width:150px;margin:0"><i style="width:62%"></i></div></div>
+    <div class="opt"><div class="lbl">효과음</div><div class="bar" style="width:150px;margin:0"><i style="width:80%"></i></div></div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">저장하고 나가기</button>
+    <button class="act" onclick="closeM()">설정</button>
+    <button class="act prim" onclick="closeM();toast('재개')">재개</button></div>
+</div>
+
+<!-- ⑪ 로비 · 인물 선택 -->
+<div class="scene" id="s-lobby">
+  <div class="scw">
+    <div class="schd"><div><div class="sct">인물 선택</div>
+      <div class="scs">역할 벽은 없다 — 셋 다 무엇이든 할 수 있고, <b>환율과 고유 능력</b>만 다르다.
+누가 무엇을 싸게 하느냐가 협력의 이유가 된다.</div></div>
+      <button class="mx scx" onclick="closeS()"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="g3">
+      <div class="card hero c1 pick"><div class="heroav">크</div><div class="herob">
+        <div class="cardt">크라수스</div>
+        <div class="cardd">주축 = 경제 규모(속주 100 / 산출 1.0). 무이자 대출과 상환 요구권을 쥔다.</div>
+        <div class="rate"><span class="lo">건설<b>×0.8</b></span><span>모집<b>×1.0</b></span><span>정치<b>×1.0</b></span></div>
+        <div class="exp" style="margin-top:11px">대출 · 용병 구매(=골드) · 건설 환율</div></div></div>
+      <div class="card hero c2 pick"><div class="heroav">폼</div><div class="herob">
+        <div class="cardt">폼페이우스</div>
+        <div class="cardd">주축 = 군사 규모(직접 정복 250 / 군사력 1.0). 정복한 속주가 곧 정치 수입이 된다.</div>
+        <div class="rate"><span class="lo">모집<b>×0.8</b></span><span>건설<b>×1.0</b></span><span class="hi">정치<b>×1.2</b></span></div>
+        <div class="exp" style="margin-top:11px">클리엔텔라(정복 속주당 정치력 +5/턴 · 병력 스폰 없음) · 정예병 · 친위대 · 개선식</div></div></div>
+      <div class="card hero c3 pick"><div class="heroav">카</div><div class="herob">
+        <div class="cardt">카이사르</div>
+        <div class="cardd">주축 = 정치 규모(지지율 30 / 활성 법안 100). 표와 법으로 점수를 번다.</div>
+        <div class="rate"><span class="lo">정치<b>×0.7</b></span><span class="hi">건설<b>×1.2</b></span><span class="hi">모집<b>×1.2</b></span></div>
+        <div class="exp" style="margin-top:11px">해방(관용) · 복점 차단(40×0.7=28) · 정치 환율</div></div></div>
+    </div>
+    <h4 class="sh" style="margin-top:26px">방</h4>
+    <div class="row"><span class="k">방 코드</span><span class="v">TRIVM-4417</span></div>
+    <div class="row"><span class="k">참가</span><span class="v">3 / 3</span></div>
+    <div class="row"><span class="k">프로파일</span><span class="v">표준 100턴 (압축 36턴으로 전환 가능)</span></div>
+    <div class="row"><span class="k">칸 강림</span><span class="v">90턴 · 데드라인 100턴</span></div>
+    <div class="exp" style="margin-top:16px">셋 다 고르지 않으면 시작할 수 없다. 같은 인물을 둘이 고를 수 없다.
+불러오기로 들어오면 저장된 인물이 그대로 예약되고 남은 자리만 고른다.</div>
+    <div style="display:flex;gap:9px;justify-content:flex-end;margin-top:24px">
+      <button class="act" onclick="closeS()">나가기</button>
+      <button class="act prim" onclick="closeS();toast('크라수스로 시작')">준비 완료</button></div>
+  </div>
+</div>
+
+<!-- ⑫ 온보딩 -->
+<div class="modal" id="m-onboard">
+  <div class="mh"><div><div class="mt">처음 다섯 가지</div>
+    <div class="ms">다 끝나면 이 패널은 사라진다 · 10턴이 지나도 자동으로 닫힌다</div></div>
+    <button class="mx" onclick="closeM()"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="mb">
+    <div class="chk done"><div class="box">✓</div><div><div class="ct">첫 건물 완공</div>
+      <div class="cd">도시 산출이 0이라 건물이 경제의 전부다. 첫 광산이 들어와야 골드가 돈다.</div></div></div>
+    <div class="chk done"><div class="box">✓</div><div><div class="ct">첫 편제 모집</div>
+      <div class="cd">유닛이 아니라 편제 단위로 움직인다는 걸 여기서 배운다.</div></div></div>
+    <div class="chk now"><div class="box">▸</div><div><div class="ct">첫 편제 이동</div>
+      <div class="cd">맵을 처음 만진다. ZOC와 지형을 자연히 마주친다.</div></div></div>
+    <div class="chk"><div class="box"></div><div><div class="ct">첫 전투 승리</div>
+      <div class="cd">칸이 공동의 적이라는 걸 체감시킨다. 격파는 디그니타스로도 들어온다.</div></div></div>
+    <div class="chk"><div class="box"></div><div><div class="ct">첫 원로원 표결</div>
+      <div class="cd">첫 원로원이 10턴이라 온보딩 타임아웃과 같은 시점이다 — 이 항목은 늦게 열린다.</div></div></div>
+    <div class="exp" style="margin-top:16px">항목을 늘리거나 줄일 때는 세 곳을 같이 고쳐야 한다 — enum · 이 패널 · 완료 판정 훅.
+한 곳만 고치면 영영 안 끝나는 항목이 생긴다.</div>
+  </div>
+  <div class="mf"><button class="act" onclick="closeM()">닫기</button></div>
+</div>
+
+<!-- ⑬ 정산 · 승부 -->
+<div class="scene" id="s-result">
+  <div class="scw">
+    <div class="schd"><div><div class="sct">원수 (Princeps)</div>
+      <div class="scs">칸 본체를 92턴에 격파했다 · 이제 전체 수치를 공개한다 — 게임 중에는 순위만 보였다</div></div>
+      <button class="mx scx" onclick="closeS()"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="podium">
+      <div class="pod"><div class="r">2위</div><div class="nm">나 · 크라수스</div><div class="sc">3,180</div></div>
+      <div class="pod w"><div class="r">1위</div><div class="nm">폼페이우스</div><div class="sc">3,540</div></div>
+      <div class="pod"><div class="r">3위</div><div class="nm">카이사르</div><div class="sc">2,905</div></div>
+    </div>
+    <h4 class="sh">어디서 벌었나</h4>
+    <table class="tb">
+      <tr><th>항목</th><th style="text-align:right">폼페이우스</th><th style="text-align:right">나</th><th style="text-align:right">카이사르</th></tr>
+      <tr><td>개별 축 누적 (매 턴 √규모)</td><td class="n">2,010</td><td class="n">2,140</td><td class="n">1,880</td></tr>
+      <tr><td>칸 유닛 격파 · 둥지 · 속주</td><td class="n">610</td><td class="n">285</td><td class="n">240</td></tr>
+      <tr><td>불가사의 · 관직 · 개선식</td><td class="n">530</td><td class="n">430</td><td class="n">380</td></tr>
+      <tr><td>본체 격파 풀 500 (기여 비례)</td><td class="n">220</td><td class="n">165</td><td class="n">115</td></tr>
+      <tr><td>막타 +50</td><td class="n">50</td><td class="n">—</td><td class="n">—</td></tr>
+      <tr><td>대출 보유 · 참주 페널티</td><td class="n">−80</td><td class="n">—</td><td class="n">−210</td></tr>
+      <tr><td>국가의 적 미참여</td><td class="n">—</td><td class="n">−20</td><td class="n">−30</td></tr>
+    </table>
+    <h4 class="sh">동점이었다면</h4>
+    <div class="exp">관직 등급 → 불가사의 수 → 의석 → (최후) 호스트. 이 순서로 갈랐다.</div>
+    <h4 class="sh">졌다면</h4>
+    <div class="exp">100턴까지 칸 본체를 못 잡으면 순위와 무관하게 <b>전원 패배</b>다.
+디그니타스는 이겼을 때만 의미가 있다 — 그래서 마지막 10턴에는 서로 견제할 이유가 사라진다.</div>
+    <div style="display:flex;gap:9px;justify-content:flex-end;margin-top:26px">
+      <button class="act" onclick="closeS()">기록 보기</button>
+      <button class="act prim" onclick="closeS()">나가기</button></div>
+  </div>
+</div>
+
+<!-- 화면 목록 런처 -->
+<button id="idxb">화면 목록</button>
+<div id="idx">
+  <h5>인게임 (기본 화면)</h5>
+  <button onclick="closeAll()">전체 HUD<span class="tag">기본</span></button>
+  <h5>정치</h5>
+  <button onclick="openM('senate')">원로원 세션<span class="tag">m-senate</span></button>
+  <button onclick="openM('assembly')">민회<span class="tag">m-assembly</span></button>
+  <button onclick="openM('office')">개선식 · 관직<span class="tag">m-office</span></button>
+  <button onclick="openM('enemy')">국가의 적 선포<span class="tag">m-enemy</span></button>
+  <button onclick="openM('rival2')">라이벌 — 폼페이우스<span class="tag">m-rival2</span></button>
+  <button onclick="openM('rival3')">라이벌 — 카이사르(독재관)<span class="tag">m-rival3</span></button>
+  <h5>경영</h5>
+  <button onclick="openM('build')">건설<span class="tag">m-build</span></button>
+  <button onclick="openM('province')">속주 상세<span class="tag">m-province</span></button>
+  <button onclick="openM('wonder')">불가사의<span class="tag">m-wonder</span></button>
+  <button onclick="openM('loan')">대출<span class="tag">m-loan</span></button>
+  <h5>군사</h5>
+  <button onclick="openM('recruit')">유닛 모집<span class="tag">m-recruit</span></button>
+  <button onclick="openM('form')">편제<span class="tag">m-form</span></button>
+  <button onclick="openM('trait')">트레잇<span class="tag">m-trait</span></button>
+  <button onclick="openM('boss')">칸 본체<span class="tag">m-boss</span></button>
+  <h5>점수 · 진행</h5>
+  <button onclick="openM('dig')">디그니타스<span class="tag">m-dig</span></button>
+  <button onclick="openM('onboard')">온보딩 5항목<span class="tag">m-onboard</span></button>
+  <button onclick="openM('absent')">부재 · 타임아웃<span class="tag">m-absent</span></button>
+  <h5>바깥 화면</h5>
+  <button onclick="openS('lobby')">로비 · 인물 선택<span class="tag">s-lobby</span></button>
+  <button onclick="openS('result')">정산 · 승부<span class="tag">s-result</span></button>
+  <button onclick="openM('pause')">일시정지 · 설정<span class="tag">m-pause</span></button>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+function openM(id){$('#veil').classList.add('on');$('#m-'+id).classList.add('on')}
+function closeM(){$('#veil').classList.remove('on');
+  document.querySelectorAll('.modal').forEach(m=>m.classList.remove('on'))}
+addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2000)}
+let sec=72;setInterval(()=>{if(sec<=0)return;sec--;
+  $('#tmr').textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')},1000);
+$('#ntog').onclick=()=>{document.body.classList.toggle('noteoff');
+  $('#ntog').textContent=document.body.classList.contains('noteoff')?'설명 켜기':'설명 끄기'};
+document.querySelectorAll('.acts button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.acts button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}));
+
+/* ── 2026-08-10 추가: 전체 화면(씬) · 화면 목록 ── */
+function openS(id){closeAll();document.getElementById('s-'+id).classList.add('on')}
+function closeS(){document.querySelectorAll('.scene').forEach(s=>s.classList.remove('on'))}
+function closeAll(){closeM();closeS();document.getElementById('idx').classList.remove('on')}
+document.getElementById('idxb').onclick=e=>{e.stopPropagation();
+  document.getElementById('idx').classList.toggle('on')};
+document.getElementById('idx').addEventListener('click',()=>
+  document.getElementById('idx').classList.remove('on'));
+addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
+/* 목업용 토글 — 실제 구현에서는 서버 상태가 정한다 */
+document.querySelectorAll('.sw').forEach(s=>s.onclick=()=>s.classList.toggle('on'));
+document.querySelectorAll('.g2 .pick:not(.no), .g3 .pick:not(.no)').forEach(c=>c.onclick=()=>{
+  const g=c.parentElement;
+  g.querySelectorAll('.pick').forEach(x=>x.classList.remove('on'));c.classList.add('on')});
+</script>
+</body></html>

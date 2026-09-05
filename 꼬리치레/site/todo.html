@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>기사의 맹세 — 미완료 목록</title>
+<style>
+:root{--ash:#E2E0DA;--panel:#F8F7F3;--line:#CBC8C0;--line2:#DEDBD4;--ink:#191A1D;--muted:#5C5F63;--faint:#8A8D90;
+--steel:#2C3E52;--ember:#9C3A20;--gold:#836318;--moss:#3B6045;
+--mono:'D2Coding','Consolas','Menlo',monospace;--body:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',system-ui,sans-serif;
+--disp:'Nanum Myeongjo','바탕','Batang',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ash);color:var(--ink);font-family:var(--body);font-size:14.5px;line-height:1.7}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);max-width:1280px;margin:0 auto;gap:32px;padding:0 20px 80px}
+aside{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:28px 0;border-right:1px solid var(--line);font-size:12.5px}
+aside .toc>ul{padding-left:0} aside ul{list-style:none;padding-left:12px;margin:0} aside li{margin:4px 0}
+aside a{color:var(--muted);text-decoration:none} aside a:hover{color:var(--steel)}
+main{padding-top:28px;min-width:0}
+h1{font-family:var(--disp);font-size:28px;color:var(--steel);margin:0 0 8px;font-weight:700;letter-spacing:.03em}
+h2{font-family:var(--disp);font-size:20px;color:var(--steel);margin:40px 0 8px;padding-top:16px;border-top:1px solid var(--line);font-weight:700}
+h3{font-family:var(--disp);font-size:16.5px;color:var(--ink);margin:26px 0 8px;font-weight:700}
+blockquote{background:#EDEBE5;border-left:3px solid var(--gold);margin:12px 0;padding:10px 16px;color:var(--muted);font-size:13px}
+blockquote p{margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--panel);border:1px solid var(--line);margin:10px 0}
+th{text-align:left;font-weight:700;color:var(--muted);font-size:11.5px;padding:7px 10px;border-bottom:1px solid var(--line);background:#EFEDE8}
+td{padding:8px 10px;border-bottom:1px solid var(--line2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.tblwrap{overflow-x:auto}
+code{font-family:var(--mono);font-size:12.5px;background:#EDEBE5;padding:1px 5px;border-radius:2px}
+pre{margin:0;padding:18px 20px;overflow:auto;background:#22262E;color:#E6E2D8;border-left:3px solid #6E7A88;font-size:12.8px;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+pre code{background:none;padding:0;color:inherit;font-size:inherit}
+.codewrap{position:relative;margin:12px 0}
+.copy{position:absolute;top:10px;right:10px;font-family:var(--body);font-size:12px;padding:5px 12px;border:1px solid #6E7A88;background:#2C3E52;color:#E6E2D8;border-radius:2px;cursor:pointer}
+.copy:hover{background:#3b5270} .copy.done{background:var(--moss);border-color:var(--moss)}
+li{margin:3px 0} hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+strong{color:var(--ink)}
+.meta{font-family:var(--mono);font-size:11px;color:var(--faint);margin-bottom:24px}
+@media(max-width:900px){.layout{grid-template-columns:1fr} aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}}
+</style></head>
+<body><div class="layout">
+<aside><div class="meta">목차</div><div class="toc">
+<ul>
+<li><a href="#1">1. 미정 — 기획이 결정해야 할 것</a></li>
+<li><a href="#2-5">2. 별도 문서 — 작성 예정 5건</a></li>
+<li><a href="#3-3">3. 플머가 정할 것 — 3건</a></li>
+<li><a href="#4">4. 도트 에셋 — 아직 없는 것</a><ul>
+<li><a href="#_2">완료로 표시된 것 (✔)</a></li>
+</ul>
+</li>
+<li><a href="#5">5. 보류 · 여유 시</a></li>
+<li><a href="#6">6. 허브 문서 자체의 정리 필요 사항</a></li>
+</ul>
+</div>
+</aside>
+<main><h1 id="_1">기사의 맹세 — 미완료 목록</h1>
+<blockquote>
+<p>근거: <code>기사의맹세_컨셉기획허브_4.html</code> (2026-09-05 기준)
+허브에 미정 · 작성 예정 · 플머 · 보류 · 여유 시로 표기된 항목과, 도트 에셋 목록에서 ✔가 없는 항목을 전부 모았다.
+정해지거나 만들어지면 이 파일에서 지우고 허브를 갱신한다.</p>
+</blockquote>
+<hr />
+<h2 id="1">1. 미정 — 기획이 결정해야 할 것</h2>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>급함</th>
+<th>메모</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>세 번째 맹세</td>
+<td>보통</td>
+<td>시연 기준 3종 필요. 후보 넷은 제안 보관함에 있음 (물러서지 않는다 · 등을 보인 자를 치지 않는다 · 한 번 벤 자를 다시 베지 않는다 · 검을 손에서 놓지 않는다)</td>
+</tr>
+<tr>
+<td>게임 제목</td>
+<td>낮음</td>
+<td>코드명 「기사의 맹세」로 쓰는 중</td>
+</tr>
+<tr>
+<td>맹세를 지킬 때의 보상</td>
+<td>—</td>
+<td>"따로 두지 않는 방향"이나 확정 아님</td>
+</tr>
+<tr>
+<td>유물 수치</td>
+<td>—</td>
+<td>허브에는 쿨타임 · 소모량 · 효과량 "모두 미정"으로 표기. 초안 표는 있으나 플레이 테스트 조정 전</td>
+</tr>
+<tr>
+<td>바르갈 체력 · 수치</td>
+<td>—</td>
+<td>미정</td>
+</tr>
+<tr>
+<td>인벤토리 화면 구성</td>
+<td>—</td>
+<td>미정. UI 목업 리스트로 넘어감</td>
+</tr>
+<tr>
+<td>스테이지 1~5 개별 내용</td>
+<td>—</td>
+<td>카드 5장 전부 "무대 · 적 배치 · 길이 · 가르치는 것 — 모두 미정"</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-5">2. 별도 문서 — 작성 예정 5건</h2>
+<p>허브 기준 권장 순서: <strong>UI 목업 리스트 → 레벨 디자인 → 보스</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>문서</th>
+<th>담는 것</th>
+<th>누가 급한가</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>UI 목업 리스트</strong></td>
+<td>맹세 문장 · 체력 · 연격(상단) · 검 슬롯 2칸 · 유물 슬롯 · 유물 3택 선택 화면 · 인벤토리(검에 인첸트) · YOU DIED</td>
+<td>플머</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>레벨 디자인 문서</strong></td>
+<td>스테이지 5개 지형 배치 · 적 배치 · 낙사 구간 · 검(3스테이지) · 유물 획득 지점</td>
+<td>플머</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>보스 문서</strong></td>
+<td>바르갈 2페이즈 내용 · 패턴 · 대사</td>
+<td>플머 · 아트</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>연출 기획서</strong></td>
+<td>오프닝 6컷 컷당 시간 · 전환 · 도트 규격, 그로기 진입 연출, YOU DIED 연출</td>
+<td>아트</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>BGM · 사운드 목록</strong></td>
+<td>필요한 곡과 효과음 목록</td>
+<td>사운드</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-3">3. 플머가 정할 것 — 3건</h2>
+<p>기획에서 값을 주지 않는다. 프로그래머가 구현하면서 잡는다.</p>
+<ul>
+<li>[ ] 패리 판정 시간 — 방어 입력 후 몇 초 · 몇 프레임 안에 성공해야 패리인지</li>
+<li>[ ] 추적 해제 거리 · 시간 — 적이 플레이어를 놓치는 조건</li>
+<li>[ ] 근접 유닛 행동 · 수치 — 공격 방식, 체력, 데미지, 이동 속도</li>
+</ul>
+<hr />
+<h2 id="4">4. 도트 에셋 — 아직 없는 것</h2>
+<table>
+<thead>
+<tr>
+<th>분류</th>
+<th>미제작 항목</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>주인공</td>
+<td>스킬 발동 · 낙사 복귀</td>
+</tr>
+<tr>
+<td>적</td>
+<td>근접 유닛 전체 — 대기 · 이동 · 공격 · 피격 · 그로기(멈춤)</td>
+</tr>
+<tr>
+<td>보스</td>
+<td>바르갈 전체 (보스 문서 이후)</td>
+</tr>
+<tr>
+<td>이펙트</td>
+<td>그로기 진입(화려하게) · 유물 스킬 9종 · 맹세 위반 · 검 스왑</td>
+</tr>
+<tr>
+<td>배경 · 타일</td>
+<td>왕도 배경(공통) · 돌 플랫폼 · 낙사 구간 · 무너진 건물 · 불 · 연기 · 불티</td>
+</tr>
+<tr>
+<td>UI</td>
+<td>전부 (UI 목업 리스트 이후)</td>
+</tr>
+<tr>
+<td>컷신</td>
+<td>오프닝 6컷 · 검신 문장 3종(맹세별)</td>
+</tr>
+<tr>
+<td>화면</td>
+<td>YOU DIED · 유물 3택 · 인벤토리</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">완료로 표시된 것 (✔)</h3>
+<ul>
+<li>주인공: 4방향 · 대기 · 걷기 · 달리기 · 점프 · 공격(옆베기) · 피격</li>
+<li>이펙트: 옆베기 참격 · 히트 임팩트 · 패리 섬광</li>
+</ul>
+<blockquote>
+<p>주의: 전체문서에는 <strong>달리기를 v4 방식으로 다시 만들어야 한다</strong>고 적혀 있다. 허브의 ✔와 달리 실질적으로는 미완이다.</p>
+</blockquote>
+<hr />
+<h2 id="5">5. 보류 · 여유 시</h2>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>상태</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>환경 데미지</td>
+<td>보류</td>
+<td>지형 · 화염으로 적이 피해를 입는 요소는 이번 빌드에 넣지 않는다 (낙사는 별개)</td>
+</tr>
+<tr>
+<td>추가 적 유닛</td>
+<td>여유 시</td>
+<td>시간이 남으면 추가한다. 종류 · 개수 미정</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6">6. 허브 문서 자체의 정리 필요 사항</h2>
+<p>허브 v4 안에서 서로 어긋나는 부분. 다음 갱신 때 맞춘다.</p>
+<ul>
+<li>[ ] 플머 Q&amp;A에 "두 번째 검 획득 스테이지 미정", "스킬 입력 키 미정", "추적 해제 조건 미정"이 남아 있다. 같은 문서의 표에서는 <strong>3스테이지 · R · 플머</strong>로 확정되어 있다. 오래된 답변이다.</li>
+<li>[ ] 스테이지 표의 클리어 보상이 "유물 1개"인데 유물 규칙 표에서는 "3개 중 하나 선택"이다.</li>
+<li>[ ] 스킬 자원 절에서 유물 수치를 "모두 미정"이라 했지만 바로 아래에 초안 표가 있다. "초안" 표기로 통일한다.</li>
+<li>[ ] 상단 숫자 카드의 미정 개수가 "–"로 비어 있다. (현재 미정 표 기준 2건)</li>
+</ul></main>
+</div>
+<script>
+document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{
+  const t=b.parentElement.querySelector('code').innerText;
+  try{await navigator.clipboard.writeText(t)}catch(e){
+    const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+  b.textContent='복사됨';b.classList.add('done');setTimeout(()=>{b.textContent='복사';b.classList.remove('done')},1500);
+}));
+document.querySelectorAll('table').forEach(t=>{const w=document.createElement('div');w.className='tblwrap';t.replaceWith(w);w.appendChild(t)});
+</script></body></html>

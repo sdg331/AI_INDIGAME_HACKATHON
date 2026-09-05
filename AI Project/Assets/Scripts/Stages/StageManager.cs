@@ -10,6 +10,11 @@ public sealed class StageManager : MonoBehaviour
     [SerializeField] private bool loadFirstStageOnStart = true;
     [SerializeField] private bool destroyPreviousStage = true;
 
+    [Header("Tutorial")]
+    [Tooltip("첫 스테이지로 불러올 튜토리얼 맵입니다. 비워 두면 바로 일반 스테이지로 시작합니다.")]
+    [SerializeField] private GameObject tutorialStagePrefab;
+    [SerializeField] private bool playTutorialFirst = true;
+
     [Header("Boss Progression")]
     [Tooltip("이 수만큼 일반 스테이지를 진행한 뒤 다음 스테이지로 보스방을 불러옵니다.")]
     [SerializeField, Min(1)] private int normalStagesBeforeBoss = 3;
@@ -39,6 +44,9 @@ public sealed class StageManager : MonoBehaviour
     private BossAI currentBoss;
     private bool exitUnlocked;
     private bool bossStageLoaded;
+    private bool tutorialStageLoaded;
+
+    public bool CurrentStageIsTutorial { get; private set; }
 
     public int RemainingStageCount => Mathf.Max(0, stagePrefabs.Count - usedStageIndices.Count);
     public IReadOnlyList<GameObject> SpawnedEnemies => spawnedEnemies;
@@ -84,6 +92,15 @@ public sealed class StageManager : MonoBehaviour
             return false;
         }
 
+        // 튜토리얼 맵은 일반 스테이지 수에 포함되지 않고 맨 처음 한 번만 나옵니다.
+        if (playTutorialFirst && !tutorialStageLoaded && tutorialStagePrefab != null)
+        {
+            tutorialStageLoaded = true;
+            SpawnStage(tutorialStagePrefab, false);
+            CurrentStageIsTutorial = true;
+            return true;
+        }
+
         if (!bossStageLoaded && loadedNormalStageCount >= normalStagesBeforeBoss)
         {
             if (bossStagePrefab == null)
@@ -124,6 +141,7 @@ public sealed class StageManager : MonoBehaviour
         usedStageIndices.Clear();
         loadedNormalStageCount = 0;
         bossStageLoaded = false;
+        tutorialStageLoaded = false;
         currentStageIsBoss = false;
         gameCompleted = false;
         currentBoss = null;
@@ -148,6 +166,12 @@ public sealed class StageManager : MonoBehaviour
     public void OnStageRewardSelected()
     {
         LoadNextStage();
+    }
+
+    // 튜토리얼처럼 적을 쓰러뜨리지 않고 끝나는 구간에서 출구를 강제로 엽니다.
+    public void ForceUnlockExit()
+    {
+        UnlockExit();
     }
 
     public void NotifyBossDefeated(BossAI boss)
@@ -186,6 +210,7 @@ public sealed class StageManager : MonoBehaviour
         spawnedEnemies.Clear();
         exitUnlocked = false;
         currentStageIsBoss = isBossStage;
+        CurrentStageIsTutorial = false;
         currentBoss = null;
 
         PlayerSpawnPoint playerSpawn = currentStage.GetComponentInChildren<PlayerSpawnPoint>(true);

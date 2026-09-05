@@ -24,6 +24,16 @@ public sealed class OathSystem : MonoBehaviour
     [SerializeField] private OathHUD oathHUD;
     [SerializeField] private UnityEvent onOathViolated;
 
+    [Header("Enforcement")]
+    [Tooltip("끄면 맹세를 표시만 하고 규칙은 적용하지 않습니다. 튜토리얼 구간에서 사용합니다.")]
+    [SerializeField] private bool enforcementEnabled = true;
+
+    public bool EnforcementEnabled
+    {
+        get => enforcementEnabled;
+        set => enforcementEnabled = value;
+    }
+
     public OathDefinition ActiveOath { get; private set; }
     public bool IsViolated { get; private set; }
 
@@ -96,6 +106,8 @@ public sealed class OathSystem : MonoBehaviour
     public bool TryPreparePlayerMeleeHit(GameObject target, int requestedDamage, out int allowedDamage)
     {
         allowedDamage = Mathf.Max(0, requestedDamage);
+        if (!enforcementEnabled)
+            return true;
         if (ActiveOath == null || IsViolated || target == null)
             return !IsViolated;
 
@@ -126,6 +138,8 @@ public sealed class OathSystem : MonoBehaviour
     // 실제 피해가 적용된 직후 호출합니다.
     public void CompletePlayerMeleeHit(GameObject target)
     {
+        if (!enforcementEnabled)
+            return;
         if (ActiveOath == null || ActiveOath.type != OathType.CannotKill || target == null)
             return;
 
@@ -143,6 +157,8 @@ public sealed class OathSystem : MonoBehaviour
     // 모든 사망 원인에서 엔티티 사망 시스템이 반드시 호출해야 합니다.
     public void NotifyEnemyDied(GameObject enemy, EnemyDeathCause cause)
     {
+        if (!enforcementEnabled)
+            return;
         if (ActiveOath != null && ActiveOath.type == OathType.CannotKill)
             ViolateOath($"적 사망 발생: '{(enemy != null ? enemy.name : "Unknown")}', 원인: {cause}");
     }
@@ -153,7 +169,7 @@ public sealed class OathSystem : MonoBehaviour
         if (enemy == null)
             return true;
 
-        if (ActiveOath != null && ActiveOath.type == OathType.CannotKill)
+        if (enforcementEnabled && ActiveOath != null && ActiveOath.type == OathType.CannotKill)
         {
             IOathIncapacitable incapacitable = FindInterface<IOathIncapacitable>(enemy);
             return incapacitable != null && incapacitable.IsIncapacitated;
@@ -169,6 +185,14 @@ public sealed class OathSystem : MonoBehaviour
             return;
 
         IsViolated = true;
+
+        if (SkillEffects.Instance != null)
+        {
+            PlayerController2D player = FindFirstObjectByType<PlayerController2D>();
+            if (player != null)
+                SkillEffects.Instance.PlayOathBreak(player.transform, player.FacingSign);
+        }
+
         Debug.LogError($"[맹세 위반] {ActiveOath?.displayName ?? "알 수 없는 맹세"} - {reason}", this);
         onOathViolated?.Invoke();
     }

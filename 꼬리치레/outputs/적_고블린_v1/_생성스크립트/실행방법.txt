@@ -1,0 +1,5 @@
+프로젝트 폴더에서 실행 (Python 3, pillow · numpy · scipy 필요):
+  python enemy_anim.py "적 1.png" outputs/적_스켈레톤_v1 스켈레톤 1,2,3,4,3,2 125 1 0
+  python enemy_anim.py "적 2.png" outputs/적_고블린_v1 고블린 1,2,3,4,5,6,7,8 150 0 120
+  python enemy_qa.py
+인자: <시트> <출력폴더> <이름> <이동프레임순서> <그림자최대명도> <차가운회색만(1/0)> <고립조각제거기준px(0=끔)>

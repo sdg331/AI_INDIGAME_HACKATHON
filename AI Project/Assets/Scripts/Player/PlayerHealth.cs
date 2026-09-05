@@ -13,6 +13,9 @@ public sealed class PlayerHealth : MonoBehaviour, IDamageable
     public bool IsDead => CurrentHealth <= 0;
     public event Action<int, int> HealthChanged;
 
+    // 씬에 미리 놓을 수 없는 오브젝트(엔딩 화면 등)가 사망을 구독할 때 사용합니다.
+    public event Action Died;
+
     private void Awake()
     {
         CurrentHealth = maxHealth;
@@ -31,6 +34,7 @@ public sealed class PlayerHealth : MonoBehaviour, IDamageable
         if (IsDead)
         {
             Debug.Log("[Player Health] 플레이어 사망", this);
+            Died?.Invoke();
             onDied?.Invoke();
         }
     }
