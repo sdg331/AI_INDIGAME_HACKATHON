@@ -1,10 +1,9 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public sealed class PlayerController2D : MonoBehaviour, IDamageable
+public sealed class PlayerController2D : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField, Min(0f)] private float moveSpeed = 6f;
@@ -15,7 +14,6 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
 
     [Header("Attack")]
     [SerializeField] private PlayerAttackHitbox attackHitbox;
-    [SerializeField] private Transform attackPivot;
     [SerializeField, Min(0f)] private float attackWindup = 0.08f;
     [SerializeField, Min(0.01f)] private float attackActiveTime = 0.12f;
     [SerializeField, Min(0f)] private float attackRecovery = 0.2f;
@@ -34,16 +32,14 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
     [SerializeField] private SpriteRenderer characterSprite;
     [SerializeField] private Animator animator;
 
-    [Header("Health")]
-    [SerializeField, Min(1)] private int maxHealth = 5;
-    [SerializeField] private UnityEvent<int, int> onHealthChanged;
-    [SerializeField] private UnityEvent onDied;
+    [Header("Entity Interface")]
+    [Tooltip("실제 체력을 관리하며 IDamageable을 구현한 엔티티 컴포넌트입니다.")]
+    [SerializeField] private MonoBehaviour damageReceiverBehaviour;
 
     public bool IsParrying => state == PlayerState.Parrying;
     public bool IsGuarding => state == PlayerState.Guarding;
     public bool IsInvulnerable => state == PlayerState.Rolling;
     public int FacingSign { get; private set; } = 1;
-    public int CurrentHealth { get; private set; }
 
     private Rigidbody2D body;
     private Camera mainCamera;
@@ -52,6 +48,8 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
     private float nextGuardTime;
     private float nextRollTime;
     private bool isGrounded;
+    private bool isAttackFacingLocked;
+    private IDamageable damageReceiver;
 
     private enum PlayerState
     {
@@ -66,12 +64,10 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
     {
         body = GetComponent<Rigidbody2D>();
         mainCamera = Camera.main;
-        CurrentHealth = maxHealth;
+        ResolveEntityInterfaces();
 
         if (attackHitbox == null)
             attackHitbox = GetComponentInChildren<PlayerAttackHitbox>(true);
-
-        ResolveAttackPivot();
 
         if (characterSprite == null)
             characterSprite = GetComponentInChildren<SpriteRenderer>(true);
@@ -85,6 +81,7 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         StopAllCoroutines();
         if (attackHitbox != null)
             attackHitbox.EndAttack();
+        isAttackFacingLocked = false;
         state = PlayerState.Normal;
     }
 
@@ -133,7 +130,8 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         float horizontalVelocity = CanMove() ? moveInput.x * moveSpeed : 0f;
         body.linearVelocity = new Vector2(horizontalVelocity, body.linearVelocity.y);
 
-        if (state == PlayerState.Normal && Mathf.Abs(moveInput.x) > 0.01f)
+        // 공격 중에는 마우스로 결정한 방향이 이동 방향보다 우선한다.
+        if (!isAttackFacingLocked && state == PlayerState.Normal && Mathf.Abs(moveInput.x) > 0.01f)
             SetFacing(moveInput.x > 0f ? 1 : -1);
     }
 
@@ -169,6 +167,7 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         }
 
         state = PlayerState.Attacking;
+        isAttackFacingLocked = true;
         body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
         SetAnimatorTrigger("Attack");
 
@@ -177,6 +176,7 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(attackActiveTime);
         attackHitbox.EndAttack();
         yield return new WaitForSeconds(attackRecovery);
+        isAttackFacingLocked = false;
         state = PlayerState.Normal;
     }
 
@@ -186,6 +186,7 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
         SetAnimatorBool("Guard", true);
         SetAnimatorBool("Parry", true);
+        Debug.Log($"[Player] 패링 시작 ({parryWindow:0.00}초)", this);
 
         yield return new WaitForSeconds(parryWindow);
 
@@ -193,6 +194,7 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         {
             state = PlayerState.Guarding;
             SetAnimatorBool("Parry", false);
+            Debug.Log("[Player] 패링 종료 → 방어 상태 시작", this);
         }
 
         while (Mouse.current?.rightButton.isPressed == true)
@@ -210,6 +212,7 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         nextGuardTime = Time.time + guardCooldown;
         SetAnimatorBool("Parry", false);
         SetAnimatorBool("Guard", false);
+        Debug.Log($"[Player] 방어 종료 (쿨타임 {guardCooldown:0.00}초)", this);
     }
 
     private IEnumerator RollRoutine()
@@ -239,39 +242,59 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
 
         if (IsParrying)
         {
-            IEnemyStaggerable staggerable = FindInterface<IEnemyStaggerable>(attacker);
-            staggerable?.EnterGroggy(groggyDuration);
+            IGroggyReceiver groggyReceiver = FindInterface<IGroggyReceiver>(attacker);
+            if (groggyReceiver != null)
+                groggyReceiver.EnterGroggy(groggyDuration, gameObject);
             SetAnimatorTrigger("ParrySuccess");
+            Debug.Log($"[Player] 패링 성공! 공격자: {GetAttackerName(attacker)}", this);
             return PlayerHitResult.Parried;
         }
 
         if (IsGuarding)
+        {
+            Debug.Log($"[Player] 방어 성공! 피해 {damage} 무효화, 공격자: {GetAttackerName(attacker)}", this);
             return PlayerHitResult.Blocked;
+        }
 
-        ApplyDamage(damage, hitPoint);
+        Vector2 hitDirection = attacker != null
+            ? ((Vector2)transform.position - (Vector2)attacker.transform.position).normalized
+            : Vector2.zero;
+        ForwardDamageToEntity(damage, hitPoint, hitDirection);
         return PlayerHitResult.Damaged;
     }
 
-    public void TakeDamage(int damage, Vector2 hitPoint, Vector2 hitDirection)
+    private void ForwardDamageToEntity(int damage, Vector2 hitPoint, Vector2 hitDirection)
     {
-        ReceiveEnemyAttack(damage, null, hitPoint);
+        if (damageReceiver == null)
+        {
+            Debug.LogWarning(
+                "[Player] IDamageable을 구현한 엔티티 컴포넌트가 없어 피해를 전달하지 못했습니다.", this);
+            return;
+        }
+
+        damageReceiver.TakeDamage(damage, hitPoint, hitDirection);
+        SetAnimatorTrigger("Hit");
     }
 
-    private void ApplyDamage(int damage, Vector2 hitPoint)
+    private void ResolveEntityInterfaces()
     {
-        if (damage <= 0 || CurrentHealth <= 0)
+        damageReceiver = damageReceiverBehaviour as IDamageable;
+        if (damageReceiver != null)
             return;
 
-        CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
-        onHealthChanged?.Invoke(CurrentHealth, maxHealth);
-        SetAnimatorTrigger("Hit");
-
-        if (CurrentHealth == 0)
+        MonoBehaviour[] behaviours = GetComponents<MonoBehaviour>();
+        foreach (MonoBehaviour behaviour in behaviours)
         {
-            body.linearVelocity = Vector2.zero;
-            enabled = false;
-            onDied?.Invoke();
+            if (behaviour is IDamageable receiver)
+            {
+                damageReceiver = receiver;
+                damageReceiverBehaviour = behaviour;
+                return;
+            }
         }
+
+        if (damageReceiverBehaviour != null)
+            Debug.LogError("Damage Receiver Behaviour는 IDamageable을 구현해야 합니다.", this);
     }
 
     private void FaceMouse()
@@ -290,40 +313,14 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         if (characterSprite != null)
             characterSprite.flipX = sign < 0;
 
-        if (attackPivot != null)
+        // 별도의 Pivot 없이 히트박스 자체를 현재 전방으로 옮긴다.
+        if (attackHitbox != null)
         {
-            Vector3 position = attackPivot.localPosition;
+            Transform hitboxTransform = attackHitbox.transform;
+            Vector3 position = hitboxTransform.localPosition;
             position.x = Mathf.Abs(position.x) * sign;
-            attackPivot.localPosition = position;
-
-            Vector3 scale = attackPivot.localScale;
-            scale.x = Mathf.Abs(scale.x) * sign;
-            attackPivot.localScale = scale;
+            hitboxTransform.localPosition = position;
         }
-    }
-
-    private void ResolveAttackPivot()
-    {
-        if (attackPivot == transform)
-        {
-            Debug.LogWarning(
-                "Attack Pivot에는 Player 자신이 아니라 공격 히트박스의 부모 오브젝트를 지정해야 합니다. " +
-                "잘못된 참조를 자동으로 해제합니다.", this);
-            attackPivot = null;
-        }
-
-        if (attackPivot != null || attackHitbox == null)
-            return;
-
-        Transform candidate = attackHitbox.transform.parent;
-        if (candidate != null && candidate != transform)
-            attackPivot = candidate;
-    }
-
-    private void OnValidate()
-    {
-        if (attackPivot == transform)
-            attackPivot = null;
     }
 
     private void UpdateGrounded()
@@ -367,6 +364,11 @@ public sealed class PlayerController2D : MonoBehaviour, IDamageable
         }
 
         return null;
+    }
+
+    private static string GetAttackerName(GameObject attacker)
+    {
+        return attacker != null ? attacker.name : "Unknown";
     }
 
     private void OnDrawGizmosSelected()

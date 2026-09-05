@@ -2,14 +2,14 @@ using System.Collections;
 using UnityEngine;
 
 // 적 루트에 붙이고, 그로기 중 멈춰야 할 이동/공격 스크립트를 behavioursToDisable에 넣으세요.
-public sealed class EnemyGroggyController : MonoBehaviour, IEnemyStaggerable
+public sealed class EnemyGroggyController : MonoBehaviour, IGroggyReceiver
 {
     [SerializeField] private Animator animator;
     [SerializeField] private Behaviour[] behavioursToDisable;
 
     private Coroutine groggyRoutine;
 
-    public void EnterGroggy(float duration)
+    public void EnterGroggy(float duration, GameObject source)
     {
         if (groggyRoutine != null)
             StopCoroutine(groggyRoutine);

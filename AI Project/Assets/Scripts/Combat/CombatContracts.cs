@@ -5,9 +5,9 @@ public interface IDamageable
     void TakeDamage(int damage, Vector2 hitPoint, Vector2 hitDirection);
 }
 
-public interface IEnemyStaggerable
+public interface IGroggyReceiver
 {
-    void EnterGroggy(float duration);
+    void EnterGroggy(float duration, GameObject source);
 }
 
 public enum PlayerHitResult
@@ -17,4 +17,3 @@ public enum PlayerHitResult
     Parried,
     Invulnerable
 }
-
